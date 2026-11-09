@@ -144,6 +144,39 @@ Với từng file trong phạm vi, áp dụng kỹ thuật phù hợp (ghi kỹ 
 - **Integration**: component + store + mock API (MSW/mock sẵn có), không gọi network thật.
 - **E2E**: luồng người dùng chính trên app thật.
 
+### 7.1 Lường case: checklist bắt buộc cho mỗi đơn vị (không chỉ happy path)
+
+Với **mỗi** hàm/component/endpoint trong phạm vi, duyệt đủ các nhóm dưới đây. Mỗi nhóm phải ra ≥1 case **hoặc** ghi `N/A (lý do cụ thể)` vào ma trận phủ của todo. Không được bỏ trống nhóm.
+
+1. **Đầu vào** (từng tham số/prop/field): rỗng, `null`/`undefined`, sai kiểu, chỉ khoảng trắng, min/max ±1, rất dài, số âm/0/NaN/Infinity/thập phân, unicode/emoji/tiếng Việt, ký tự đặc biệt, chuỗi dạng injection (`<script>`, `' OR 1=1`, `../`).
+2. **Trạng thái & quyền**: chưa đăng nhập, token hết hạn, sai role, truy cập dữ liệu của người khác (IDOR), dữ liệu rỗng / 1 phần tử / rất nhiều, dữ liệu đã bị xoá/đã tồn tại (trùng).
+3. **Phụ thuộc ngoài lỗi**: timeout, 4xx, 5xx, mất mạng, response rỗng/sai shape/thiếu field, trả chậm, trả về nhiều lần, retry.
+4. **Đồng thời & lặp**: double click/double submit, gọi hai lần liền (idempotency), race giữa hai request, thao tác khi đang loading, huỷ giữa chừng, đổi route khi request chưa xong.
+5. **Toàn vẹn dữ liệu**: lỗi giữa chừng có rollback/để lại dữ liệu nửa vời không; kết quả sai thứ tự/phân trang biên (trang 0, trang cuối, ngoài range).
+6. **Thời gian & địa phương**: múi giờ, DST, cuối tháng/năm nhuận, định dạng ngày/số/tiền theo locale.
+7. **Bảo mật**: XSS (render text không phải HTML), lộ dữ liệu nhạy cảm trong response/log/URL, mass assignment, thiếu kiểm tra quyền phía server, validate chỉ ở client.
+8. **UX & a11y** (frontend): back/refresh giữa luồng, mất focus, bàn phím, lỗi hiển thị cho người dùng (không im lặng), trạng thái loading/empty/error đều có.
+9. **Happy path**: luồng đúng chính.
+
+Quy tắc cân bằng: với đơn vị P0/P1, số case không-happy phải ≥ số case happy. Chỉ có happy path = chưa đạt.
+
+### 7.2 Case "thiếu xử lý" (gap case)
+
+Lỗi hay nằm ở chỗ code **không** làm gì. Nguyên tắc 1 vẫn giữ, nhưng bằng chứng của gap case là: (a) nơi đầu vào độc hại/bất thường *có thể đi vào* hàm (call site, route, input field, response API) với `path:line`, và (b) Grep/đọc xác nhận **không có** guard tương ứng. Kỳ vọng lấy từ type/spec/chuẩn chung (ví dụ "không crash với null", "server phải kiểm tra quyền"); nếu không có spec → `NEEDS-CONFIRM`. Test khẳng định hành vi **đúng** (không khẳng định hành vi sai hiện tại); nếu fail thì là `FAIL-PRODUCT`.
+
+### 7.3 Ma trận phủ trong todo
+
+Đầu `todo/<run-id>.md` thêm bảng: hàng = đơn vị (file → hàm), cột = 9 nhóm ở 7.1, ô = danh sách TC hoặc `N/A (lý do)`. Dùng ma trận này khi báo cáo "rủi ro chưa phủ".
+
+### 7.4 Phi chức năng & dữ liệu (khi phạm vi có đụng tới)
+
+Chỉ tạo case khi có bằng chứng trong code; mặc định `full`, còn `default` chỉ khi file đổi thuộc nhóm này. Không có công cụ/hạ tầng thì ghi `BLOCKED`, không tự cài.
+- **Hiệu năng cơ bản:** vòng lặp/query lồng (N+1), danh sách lớn (10k phần tử) không đơ, debounce/throttle đúng, không rò listener/timer sau unmount. Đặt ngưỡng từ spec hoặc user; không có ngưỡng thì chỉ ghi nhận số đo, không assert.
+- **Tải (load/stress):** không tự chạy vào môi trường thật. Chỉ sinh kịch bản (k6/autocannon) và **hỏi** trước khi chạy, chỉ nhắm localhost/staging user chỉ định.
+- **Migration/schema DB:** chạy lên từ DB trống và từ dữ liệu cũ; rollback; ràng buộc (unique, FK, NOT NULL) bị vi phạm thì lỗi đúng; dữ liệu hiện có không mất.
+- **Contract API:** shape request/response khớp type/OpenAPI nếu có; field mới/bị bỏ không làm client hỏng; mã lỗi và thông điệp nhất quán.
+- **Tương thích:** trình duyệt/viewport (Playwright projects), phiên bản Node/runtime ghi trong `engines`.
+
 Priority: **P0** hỏng là chặn người dùng/mất dữ liệu/bảo mật; **P1** chức năng chính; **P2** biên/lỗi phụ; **P3** thẩm mỹ, hiếm gặp.
 
 Ghi vào `todo/<run-id>.md` đúng định dạng:
@@ -228,7 +261,8 @@ Nếu app không khởi động được → các case e2e là `BLOCKED` kèm lo
    - **Môi trường** (thiếu env, server không lên): `BLOCKED` kèm lý do.
    - Kết quả không ổn định: chạy lại tối đa 3 lần; không nhất quán → `FLAKY` (không tính PASS), ghi nguyên nhân nghi ngờ.
 5. Regression: chạy test sẵn có liên quan đến file đổi/impacted (`vitest related <files> --run`, `jest --findRelatedTests <files>`). `full` chạy toàn bộ suite. Ghi riêng lỗi regression.
-6. Coverage chỉ báo khi runner thật sự xuất ra; không ước lượng.
+6. **Test phải có khả năng fail** (P0, bắt buộc ở `full`): với mỗi case P0 đã PASS, kiểm tra nó thật sự bắt lỗi — trong một bản sao tạm (git worktree/thư mục tạm, **không** sửa source thật) đảo điều kiện/xoá guard liên quan rồi chạy lại; test vẫn pass → test vô dụng, viết lại assertion.
+7. Coverage chỉ báo khi runner thật sự xuất ra; không ước lượng.
 
 ---
 
@@ -237,6 +271,7 @@ Nếu app không khởi động được → các case e2e là `BLOCKED` kèm lo
 Ghi `.qa-agent/reports/<run-id>.md`:
 - Chế độ, commit, phạm vi (số file quét / đọc mới / dùng cache)
 - Bảng số lượng theo trạng thái và priority (khớp todo)
+- Ma trận phủ (7.3) và **rủi ro chưa phủ**: nhóm nào N/A hoặc bị lite/default bỏ qua, vì sao
 - Bug sản phẩm (FAIL-PRODUCT) — chi tiết như trên
 - BLOCKED / FLAKY / NEEDS-CONFIRM kèm lý do và câu hỏi cho user
 - Case đã loại vì không có bằng chứng
@@ -251,6 +286,7 @@ Tin nhắn cuối cho user: ngắn gọn — số pass/fail/blocked, bug nổi b
 ## 12. Checklist tự kiểm trước khi kết thúc
 
 - [ ] Mọi TC có bằng chứng `path:line` đã được Grep xác nhận
+- [ ] Mỗi đơn vị P0/P1 có ma trận phủ 9 nhóm, không ô trống; case không-happy ≥ happy
 - [ ] Mọi PASS khớp JSON của runner; không có `.skip`/`.only`/`waitForTimeout` trong file sinh ra (Grep kiểm tra)
 - [ ] Không file source nào bị sửa ngoài ý user
 - [ ] File sinh ra đúng cấu trúc, có header, có trong `manifest.json`

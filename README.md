@@ -5,6 +5,7 @@ A [Claude Code](https://claude.com/claude-code) skill that acts as a **Senior QC
 - **No invented test cases** – every case must cite evidence (`path:line`) from real code.
 - **No fake passes** – PASS is only recorded after a real test runner reports it.
 - **No cheating to go green** – no weakened assertions, `.skip`, blind snapshot updates, etc.
+- **Not just happy paths**: a 9-group checklist per unit (input, auth/state, dependency failures, concurrency, data integrity, time/locale, security, UX/a11y, happy), gap cases for missing guards, a coverage matrix, and a check that P0 tests can actually fail.
 - Todo file is the source of truth; source-tree cache (`scripts/scan.mjs`) avoids re-reading unchanged files.
 - Asks before using Playwright for frontend.
 
