@@ -15,13 +15,13 @@ Modes: `default`, `lite`, `full`.
 Personal (all projects):
 
 ```bash
-git clone https://github.com/<your-user>/qa-test-agent ~/.claude/skills/qa-test-agent
+git clone https://github.com/maitrithanh/qa-test-agent-skill ~/.claude/skills/qa-test-agent
 ```
 
 Single project:
 
 ```bash
-git clone https://github.com/<your-user>/qa-test-agent .claude/skills/qa-test-agent
+git clone https://github.com/maitrithanh/qa-test-agent-skill .claude/skills/qa-test-agent
 ```
 
 Update: `git -C ~/.claude/skills/qa-test-agent pull`
@@ -54,4 +54,4 @@ MIT
 
 Skill cho Claude Code đóng vai Senior QC Automation: thiết kế, viết, chạy test thật; không bịa case, không tự cho pass.
 
-Cài: `git clone https://github.com/<your-user>/qa-test-agent ~/.claude/skills/qa-test-agent`, rồi gõ `/qa-test-agent` (hoặc `lite` / `full`) trong Claude Code.
+Cài: `git clone https://github.com/maitrithanh/qa-test-agent-skill ~/.claude/skills/qa-test-agent`, rồi gõ `/qa-test-agent` (hoặc `lite` / `full`) trong Claude Code.
