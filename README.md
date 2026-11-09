@@ -6,7 +6,7 @@
 Designs, writes and runs *real* tests — no invented cases, no fake passes.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-![Version](https://img.shields.io/badge/version-1.3.0-blue)
+![Version](https://img.shields.io/badge/version-1.4.0-blue)
 ![Claude Code](https://img.shields.io/badge/Claude_Code-✓-d97757)
 ![Codex](https://img.shields.io/badge/Codex-✓-111)
 ![Gemini CLI](https://img.shields.io/badge/Gemini_CLI-✓-4285f4)
@@ -30,6 +30,7 @@ Most AI-written tests are green because they were written to be green. This skil
 | 🧠 **Not just happy paths** | 9-group checklist per unit: input, auth/state, dependency failures, concurrency, data integrity, time/locale, security, UX/a11y, happy. Gap cases for *missing* guards. |
 | 🧬 **Tests must be able to fail** | P0 tests are checked against a deliberately broken copy to prove they catch the bug. |
 | 💸 **Token-friendly** | Source-tree hash cache (`scripts/scan.mjs`) — unchanged files are never re-read. |
+| 🛡 **Security audit mode** | `audit` traces user input source → sink with `path:line`, checks 13 vulnerability groups (injection, XSS, authn/z, SSRF, crypto, secrets, dependencies, CI/IaC…), masks secrets, never edits or attacks anything. |
 | 🎭 **Playwright, with consent** | Asks before touching the UI, surveys the real DOM first, uses role-based locators. |
 
 ---
@@ -108,6 +109,7 @@ The skill is the open [Agent Skills](https://agentskills.io) format. Copy `skill
 /qa-test-agent          # default: new/changed code only
 /qa-test-agent lite     # whole project, P0 only, quick
 /qa-test-agent full     # whole project, deep, P0–P3
+/qa-test-agent audit    # security vulnerability scan (whole project or `audit <path>`)
 ```
 
 On other agents, just ask: *"use the qa-test-agent skill in full mode"*.
@@ -121,6 +123,7 @@ First run asks two things: commit generated tests to git or not, and whether to 
 | `default` | Changed code + files it impacts | P0–P2 | unit, integration, e2e for changed routes |
 | `lite` | Whole project, via cache summaries | P0 only | core unit + smoke e2e |
 | `full` | Whole project, deep read | P0–P3, all techniques | unit, integration, e2e, a11y, responsive, regression, non-functional |
+| `audit` | Whole project or a path | Security findings, Critical → Info, with confidence | static source→sink tracing + security regression tests |
 
 `full` shows the total case count and **asks for confirmation** before writing anything.
 
@@ -186,4 +189,4 @@ Issues and PRs welcome. Keep `SKILL.md` concise and every rule verifiable. When 
 | Codex | `codex plugin marketplace add maitrithanh/qa-test-agent-skill`, rồi cài trong Plugins directory |
 | Copilot | copy `skills/qa-test-agent` vào `.github/skills/` hoặc `~/.copilot/skills/` |
 
-Dùng: `/qa-test-agent` (mặc định), `/qa-test-agent lite`, `/qa-test-agent full`.
+Dùng: `/qa-test-agent` (mặc định), `/qa-test-agent lite`, `/qa-test-agent full`, `/qa-test-agent audit`.
