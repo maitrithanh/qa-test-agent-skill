@@ -102,10 +102,10 @@ Khi `commitTests: false`: viết test mới vào thư mục riêng (ví dụ `te
 
 ## 5. Cache source tree
 
-Lần đầu, copy `scripts/scan.mjs` của skill này vào `.qa-agent/bin/scan.mjs` của dự án (cần Node ≥ 18; nếu dự án không có Node thì viết bản Python tương đương). Chạy: `node .qa-agent/bin/scan.mjs`. Script in ra JSON: `added`, `changed`, `removed`, `staleSummary`, `unchanged`, `total`.
+Lần đầu, copy `scripts/scan.mjs` của skill này vào `.qa-agent/bin/scan.mjs` của dự án (cần Node ≥ 18; nếu dự án không có Node thì viết bản Python tương đương). Chạy: `node .qa-agent/bin/scan.mjs`. Script in ra JSON: `added`, `changed`, `removed`, `staleSummary`, `unchanged`, `total`, `impacted`, `impactedTests`. `impacted`/`impactedTests` = file nguồn/file test import (kể cả gián tiếp) file vừa thêm/đổi, dựa trên đồ thị import (JS/TS/Vue/Svelte, hỗ trợ import tương đối và alias `@/`, `~/`, `#/`). Ngôn ngữ khác hoặc alias lạ: fallback Grep. Script tự xoá summary của file đã bị xoá, ghi cache nguyên tử, và dùng `scan.lock` để chặn chạy song song (lock cũ >5 phút bị coi là hỏng).
 
 Cách dùng cache:
-- Chạy script ở đầu mỗi lần. Chỉ đọc file nằm trong `staleSummary` **và** thuộc phạm vi của chế độ.
+- Chạy script ở đầu mỗi lần. **Dựa vào `staleSummary`, không dựa vào `changed`** (cache được ghi ngay khi quét, lần chạy dở dang sẽ làm mất `changed`). Summary của file trong `impacted` có thể lỗi thời dù hash không đổi (file nó import đã đổi): đọc lại phần import/export liên quan trước khi tin summary. Chỉ đọc file nằm trong `staleSummary` **và** thuộc phạm vi của chế độ.
 - Sau khi đọc một file nguồn, ghi summary vào `cache/summaries/<path thay / bằng __>.json`:
 ```json
 { "path": "src/components/LoginForm.vue", "hash": "<sha1 từ source-tree.json>", "kind": "component|page|hook|composable|store|util|service|api|route|other",
@@ -123,7 +123,7 @@ Cách dùng cache:
 **default** — hợp các tập sau, lọc file nguồn, bỏ file test:
 - `git diff --name-only <lastRunCommit>...HEAD` (nếu `lastRunCommit` null: `git merge-base HEAD origin/<baseBranch>`; nếu không có remote/base → hỏi user nhánh gốc)
 - `git diff --name-only` (chưa stage), `git diff --name-only --cached`, `git ls-files -o --exclude-standard`
-- **Impacted**: file import trực tiếp file đã đổi (Grep đường dẫn import, gồm alias). Nhóm này chỉ chạy test sẵn có để regression (`vitest related`, `jest --findRelatedTests`), không sinh case mới.
+- **Impacted**: lấy từ `impacted`/`impactedTests` của scan (Grep import chỉ làm fallback cho ngôn ngữ scan chưa hỗ trợ). Nhóm này chỉ chạy test sẵn có để regression (`vitest related`, `jest --findRelatedTests`), không sinh case mới.
 
 Nếu phạm vi rỗng → báo "không có code mới" và dừng.
 
