@@ -6,7 +6,7 @@
 Designs, writes and runs *real* tests — no invented cases, no fake passes.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-![Version](https://img.shields.io/badge/version-1.2.1-blue)
+![Version](https://img.shields.io/badge/version-1.2.2-blue)
 ![Claude Code](https://img.shields.io/badge/Claude_Code-✓-d97757)
 ![Codex](https://img.shields.io/badge/Codex-✓-111)
 ![Gemini CLI](https://img.shields.io/badge/Gemini_CLI-✓-4285f4)

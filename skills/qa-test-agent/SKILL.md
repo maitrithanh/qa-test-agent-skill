@@ -20,7 +20,8 @@ Cách gọi: `/qa-test-agent` (mặc định = `default`), `/qa-test-agent lite`
 5. **Theo convention của dự án** (runner, thư mục, naming, alias, mock lib). Chỉ dùng cấu trúc mặc định ở mục 8 khi dự án chưa có convention.
 6. **Không cài package, không sửa file cấu hình dùng chung, không sửa source** khi chưa hỏi user.
 7. **Kỳ vọng phải có nguồn.** Expected lấy từ: code (khi hành vi rõ ràng là chủ ý), tài liệu/spec/type, hoặc user. Nếu code trông như đang sai (ví dụ off-by-one, thiếu xử lý null) → **không** viết test khẳng định hành vi sai; đánh dấu `NEEDS-CONFIRM` + ghi là nghi bug.
-8. **Tiết kiệm token:** đọc summary trong cache trước; chỉ mở file khi hash đổi hoặc cần viết test cho nó, và chỉ đọc đoạn liên quan (offset/limit).
+8. **Không đọc, không quét, không Grep file bí mật**: `.env`, `.env.*` (trừ `.env.example`/`.env.sample`), `*.pem`, `*.key`, `id_rsa*`, `*.p12`, `*.keystore`, `credentials.json`, `secrets.{json,yml,yaml,toml}`. (File code như `secrets.ts` vẫn test bình thường, nhưng không in giá trị bí mật ra ngoài.) Khi Grep/Glob luôn loại các file này (ví dụ `--glob '!.env*'`); không mở chúng kể cả khi cần biết biến môi trường — hỏi user tên biến, hoặc đọc `.env.example`. Không in giá trị biến môi trường ra log/báo cáo/todo/summary. Test chỉ tham chiếu biến qua `process.env.X`, không bao giờ ghi giá trị vào file.
+9. **Tiết kiệm token:** đọc summary trong cache trước; chỉ mở file khi hash đổi hoặc cần viết test cho nó, và chỉ đọc đoạn liên quan (offset/limit).
 
 ---
 
@@ -65,7 +66,7 @@ Hỏi bằng AskUserQuestion (gộp trong một lần hỏi):
 - *Không* → gitignore artifact **và** mọi file test do agent sinh ra.
 
 **Q2 – Playwright** (chỉ hỏi nếu phát hiện frontend, xem mục 4): "Có muốn test UI thật bằng Playwright không?" — *Có* / *Không* / *Hỏi lại mỗi lần chạy*.
-Nếu Có, hỏi tiếp: base URL, lệnh khởi động dev server (đề xuất từ `scripts` trong package.json), có cần đăng nhập không (nếu có: tài khoản test lấy từ đâu — **không** nhận mật khẩu thật, dùng biến môi trường `QA_E2E_USER`/`QA_E2E_PASS` trong `.env.local` đã gitignore).
+Nếu Có, hỏi tiếp: base URL, lệnh khởi động dev server (đề xuất từ `scripts` trong package.json), có cần đăng nhập không (nếu có: tài khoản test lấy từ đâu — **không** nhận mật khẩu thật, dùng biến môi trường `QA_E2E_USER`/`QA_E2E_PASS`; **user tự đặt** vào `.env.local` (đã gitignore) hoặc shell, agent không đọc và không ghi file `.env*`).
 
 Lưu vào `config.json`:
 ```json

@@ -12,6 +12,8 @@ const SRC = /\.(m?[jt]sx?|cjs|vue|svelte|py|go|java|kt|rb|php|cs)$/;
 const JS = /\.(m?[jt]sx?|cjs|vue|svelte)$/;
 const EXTS = ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.vue', '.svelte'];
 const IGNORE = /(^|\/)(node_modules|dist|build|out|coverage|vendor|\.next|\.nuxt|\.svelte-kit|\.qa-agent|playwright-report|test-results)(\/|$)/;
+// Secrets are never listed, hashed or read.
+const SECRET = /(^|\/)(\.env(\.(?!example$|sample$)[^/]*)?|id_rsa[^/]*|[^/]*\.(pem|key|p12|keystore))$/i;
 const TEST = /\.(test|spec)\.|(^|\/)(__tests__|tests?|e2e)\//;
 const IMPORT = /(?:import|export)\s[^'";]*?from\s*['"]([^'"]+)['"]|import\s*['"]([^'"]+)['"]|import\(\s*['"]([^'"]+)['"]\s*\)|require\(\s*['"]([^'"]+)['"]\s*\)/g;
 
@@ -47,7 +49,7 @@ const diff = { added: [], changed: [], removed: [], staleSummary: [], unchanged:
 const specs = {}; // path -> raw import specifiers
 
 for (const p of listFiles()) {
-  if (!SRC.test(p) || IGNORE.test(p) || !fs.existsSync(p)) continue;
+  if (!SRC.test(p) || IGNORE.test(p) || SECRET.test(p) || !fs.existsSync(p)) continue;
   const buf = fs.readFileSync(p);
   const hash = crypto.createHash('sha1').update(buf).digest('hex');
   const isTest = TEST.test(p);
