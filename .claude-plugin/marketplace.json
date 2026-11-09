@@ -1,0 +1,12 @@
+{
+  "name": "qa-test-agent-skill",
+  "owner": { "name": "maitrithanh" },
+  "plugins": [
+    {
+      "name": "qa-test-agent",
+      "source": "./",
+      "description": "Senior QC Automation agent: designs, writes and runs real tests; no invented cases, no fake passes.",
+      "version": "1.0.0"
+    }
+  ]
+}

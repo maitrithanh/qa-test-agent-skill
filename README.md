@@ -12,19 +12,21 @@ Modes: `default`, `lite`, `full`.
 
 ## Install
 
-Personal (all projects):
+Via plugin marketplace (recommended), inside Claude Code:
 
-```bash
-git clone https://github.com/maitrithanh/qa-test-agent-skill ~/.claude/skills/qa-test-agent
+```
+/plugin marketplace add maitrithanh/qa-test-agent-skill
+/plugin install qa-test-agent@qa-test-agent-skill
 ```
 
-Single project:
+Update: `/plugin marketplace update qa-test-agent-skill`
+
+Manual (no plugin): copy the skill folder.
 
 ```bash
-git clone https://github.com/maitrithanh/qa-test-agent-skill .claude/skills/qa-test-agent
+git clone https://github.com/maitrithanh/qa-test-agent-skill /tmp/qta
+cp -r /tmp/qta/skills/qa-test-agent ~/.claude/skills/
 ```
-
-Update: `git -C ~/.claude/skills/qa-test-agent pull`
 
 Requires Node ≥ 18 (for the cache scanner).
 
@@ -33,12 +35,12 @@ Requires Node ≥ 18 (for the cache scanner).
 In Claude Code:
 
 ```
-/qa-test-agent          # default
+/qa-test-agent          # default (as a plugin: /qa-test-agent:qa-test-agent)
 /qa-test-agent lite
 /qa-test-agent full
 ```
 
-See [SKILL.md](SKILL.md) for the full workflow and rules.
+See [SKILL.md](skills/qa-test-agent/SKILL.md) for the full workflow and rules.
 
 ## Contributing
 
@@ -54,4 +56,4 @@ MIT
 
 Skill cho Claude Code đóng vai Senior QC Automation: thiết kế, viết, chạy test thật; không bịa case, không tự cho pass.
 
-Cài: `git clone https://github.com/maitrithanh/qa-test-agent-skill ~/.claude/skills/qa-test-agent`, rồi gõ `/qa-test-agent` (hoặc `lite` / `full`) trong Claude Code.
+Cài: `/plugin marketplace add maitrithanh/qa-test-agent-skill` rồi `/plugin install qa-test-agent@qa-test-agent-skill`, sau đó gõ `/qa-test-agent` (hoặc `lite` / `full`) trong Claude Code.

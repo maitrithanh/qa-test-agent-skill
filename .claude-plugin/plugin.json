@@ -1,0 +1,10 @@
+{
+  "name": "qa-test-agent",
+  "description": "Senior QC Automation agent: designs, writes and runs real tests; no invented cases, no fake passes.",
+  "version": "1.0.0",
+  "author": { "name": "maitrithanh" },
+  "homepage": "https://github.com/maitrithanh/qa-test-agent-skill",
+  "repository": "https://github.com/maitrithanh/qa-test-agent-skill",
+  "license": "MIT",
+  "keywords": ["qa", "testing", "playwright", "automation"]
+}
