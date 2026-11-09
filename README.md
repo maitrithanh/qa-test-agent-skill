@@ -6,7 +6,7 @@
 Designs, writes and runs *real* tests — no invented cases, no fake passes.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-![Version](https://img.shields.io/badge/version-1.2.2-blue)
+![Version](https://img.shields.io/badge/version-1.3.0-blue)
 ![Claude Code](https://img.shields.io/badge/Claude_Code-✓-d97757)
 ![Codex](https://img.shields.io/badge/Codex-✓-111)
 ![Gemini CLI](https://img.shields.io/badge/Gemini_CLI-✓-4285f4)
@@ -146,6 +146,7 @@ Everything lives in a gitignored `.qa-agent/` folder:
 Case lifecycle: `TODO → WRITTEN → PASS | FAIL-PRODUCT | FAIL-TEST | FLAKY | BLOCKED | NEEDS-CONFIRM`
 
 Full rules and workflow: [`skills/qa-test-agent/SKILL.md`](skills/qa-test-agent/SKILL.md).
+The skill is written in English and replies in the language you write in. A Vietnamese copy is kept at [`SKILL.vi.md`](skills/qa-test-agent/SKILL.vi.md) — rename it to `SKILL.md` to use it.
 
 ## ❓ FAQ
 
