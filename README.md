@@ -22,6 +22,30 @@ Via plugin marketplace (recommended), inside Claude Code:
 
 Update: `/plugin marketplace update qa-test-agent-skill`
 
+### Other agents
+
+The skill is the open `SKILL.md` format, so the same `skills/qa-test-agent/` folder works everywhere.
+
+**Gemini CLI** (extension):
+```bash
+gemini extensions install https://github.com/maitrithanh/qa-test-agent-skill
+```
+
+**Codex** (plugin marketplace):
+```bash
+codex plugin marketplace add maitrithanh/qa-test-agent-skill
+```
+then install `qa-test-agent` from the Plugins directory. Or no plugin: copy the folder to `.agents/skills/` (repo) or `~/.agents/skills/` (user).
+
+**GitHub Copilot** (no marketplace; copy the skill, works in VS Code agent mode, Copilot CLI and cloud agent):
+```bash
+git clone https://github.com/maitrithanh/qa-test-agent-skill /tmp/qta
+cp -r /tmp/qta/skills/qa-test-agent .github/skills/        # per repo
+cp -r /tmp/qta/skills/qa-test-agent ~/.copilot/skills/     # personal
+```
+
+> The Gemini/Codex/Copilot manifests follow their public docs but are less tested than the Claude Code one. Open an issue if an install fails.
+
 Manual (no plugin): copy the skill folder.
 
 ```bash

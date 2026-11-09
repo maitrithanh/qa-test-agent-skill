@@ -1,0 +1,12 @@
+{
+  "name": "qa-test-agent",
+  "version": "1.2.0",
+  "description": "Senior QC Automation agent: designs, writes and runs real tests; no invented cases, no fake passes.",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "QA Test Agent",
+    "shortDescription": "Real tests, real evidence, no fake passes",
+    "developerName": "maitrithanh",
+    "category": "Coding"
+  }
+}
