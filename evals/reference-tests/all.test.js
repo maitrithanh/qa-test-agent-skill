@@ -1,0 +1,26 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { applyDiscount } from '../src/cart.js';
+import { paginate } from '../src/pagination.js';
+import { isAdult, normalizeEmail } from '../src/user.js';
+import { canEdit } from '../src/auth.js';
+import { average } from '../src/stats.js';
+
+test('[REF-1] 100% discount is allowed and free', () => assert.equal(applyDiscount(50, 100), 0));
+test('[REF-2] percent > 100 throws', () => assert.throws(() => applyDiscount(50, 101), RangeError));
+test('[REF-3] negative percent throws', () => assert.throws(() => applyDiscount(50, -1), RangeError));
+test('[REF-4] rounds to cents', () => assert.equal(applyDiscount(10, 33), 6.7));
+test('[REF-5] page 1 is the first page', () => assert.deepEqual(paginate([1, 2, 3, 4, 5], 1, 2), [1, 2]));
+test('[REF-6] page past the end is empty', () => assert.deepEqual(paginate([1, 2, 3], 5, 2), []));
+test('[REF-7] page 0 throws', () => assert.throws(() => paginate([1, 2, 3], 0, 2), RangeError));
+test('[REF-8] size 0 throws', () => assert.throws(() => paginate([1], 1, 0), RangeError));
+test('[REF-9] 18 is adult', () => assert.equal(isAdult(18), true));
+test('[REF-10] 17 is not adult', () => assert.equal(isAdult(17), false));
+test('[REF-11] email lower-cased and trimmed', () => assert.equal(normalizeEmail('  A@B.Com '), 'a@b.com'));
+test('[REF-12] admin can edit any doc', () => assert.equal(canEdit({ id: 1, role: 'admin' }, { ownerId: 9 }), true));
+test('[REF-13] owner can edit', () => assert.equal(canEdit({ id: 1, role: 'user' }, { ownerId: 1 }), true));
+test('[REF-14] string id does not match numeric id', () => assert.equal(canEdit({ id: 1, role: 'user' }, { ownerId: '1' }), false));
+test('[REF-15] null user can edit nothing', () => assert.equal(canEdit(null, { ownerId: 1 }), false));
+test('[REF-16] average of empty is 0', () => assert.equal(average([]), 0));
+test('[REF-17] average ignores NaN', () => assert.equal(average([2, NaN, 4]), 3));
+test('[REF-18] average basic', () => assert.equal(average([1, 2, 3]), 2));

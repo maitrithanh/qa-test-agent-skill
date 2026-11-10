@@ -6,7 +6,7 @@
 Designs, writes and runs *real* tests — no invented cases, no fake passes.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-![Version](https://img.shields.io/badge/version-1.5.0-blue)
+![Version](https://img.shields.io/badge/version-1.6.0-blue)
 ![Claude Code](https://img.shields.io/badge/Claude_Code-✓-d97757)
 ![Codex](https://img.shields.io/badge/Codex-✓-111)
 ![Gemini CLI](https://img.shields.io/badge/Gemini_CLI-✓-4285f4)
@@ -128,6 +128,7 @@ The skill is the open [Agent Skills](https://agentskills.io) format. Copy `skill
 /qa-test-agent lite     # whole project, P0 only, quick
 /qa-test-agent full     # whole project, deep, P0–P3
 /qa-test-agent audit    # security vulnerability scan (whole project or `audit <path>`)
+/qa-test-agent repro <bug or issue>   # one failing test that reproduces a reported bug
 ```
 
 On other agents, just ask: *"use the qa-test-agent skill in full mode"*.
@@ -160,6 +161,7 @@ Output per page and viewport: `*.aria.txt` (accessibility tree), `*.png` (full-p
 | `default` | Changed code + files it impacts | P0–P2 | unit, integration, e2e for changed routes |
 | `lite` | Whole project, via cache summaries | P0 only | core unit + smoke e2e |
 | `full` | Whole project, deep read | P0–P3, all techniques | unit, integration, e2e, a11y, responsive, regression, non-functional |
+| `repro` | One reported bug | One failing test proving it; no fix unless asked | the cheapest layer that reproduces it |
 | `audit` | Whole project or a path | Security findings, Critical → Info, with confidence | static source→sink tracing + security regression tests |
 
 `full` shows the total case count and **asks for confirmation** before writing anything.
@@ -188,7 +190,9 @@ Everything lives in a gitignored `.qa-agent/` folder:
 Case lifecycle: `TODO → WRITTEN → PASS | FAIL-PRODUCT | FAIL-TEST | FLAKY | BLOCKED | NEEDS-CONFIRM`
 
 Full rules and workflow: [`skills/qa-test-agent/SKILL.md`](skills/qa-test-agent/SKILL.md).
-The skill is written in English and replies in the language you write in. A Vietnamese copy is kept at [`SKILL.vi.md`](skills/qa-test-agent/SKILL.vi.md) — rename it to `SKILL.md` to use it.
+The skill is written in English and replies in the language you write in. `SKILL.md` stays short (~230 lines); detail lives in `references/` and is loaded only when needed (`first-run`, `cache`, `case-design`, `writing`, `playwright`, `nonfunctional`, `audit`). That keeps token use low.
+
+A Vietnamese copy lives in [`docs/vi/`](docs/vi/). To use it, copy `docs/vi/SKILL.md` and `docs/vi/references/` over `skills/qa-test-agent/` (keep `scripts/`).
 
 ## ❓ FAQ
 
@@ -207,9 +211,13 @@ It won't write a test asserting the wrong behavior. The case is marked <code>NEE
 It follows your project's convention: Vitest, Jest, Playwright, and others it detects. It suggests one (and asks before installing) if none exists.
 </details>
 
+## 🧪 Evals
+
+[`evals/`](evals/) holds a small app with 9 planted bugs and an objective scorer (bugs caught, false-positive tests). Use it to compare modes and skill versions before changing the rules — see [`evals/README.md`](evals/README.md).
+
 ## 🤝 Contributing
 
-Issues and PRs welcome. Keep `SKILL.md` concise and every rule verifiable. When releasing, bump `version` in `.claude-plugin/*.json`, `.codex-plugin/plugin.json`, `gemini-extension.json` and the version badge in this README, then tag `vX.Y.Z`.
+Issues and PRs welcome. Keep `SKILL.md` concise (details go to `references/`) and every rule verifiable; back changes with an `evals/` run. When releasing, bump `version` in `.claude-plugin/*.json`, `.codex-plugin/plugin.json`, `gemini-extension.json` and the version badge in this README, then tag `vX.Y.Z`.
 
 ## 📄 License
 

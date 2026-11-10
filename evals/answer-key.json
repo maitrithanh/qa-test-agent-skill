@@ -1,0 +1,65 @@
+[
+ {
+  "id": "B1",
+  "file": "src/cart.js",
+  "buggy": "percent >= 100",
+  "fixed": "percent > 100",
+  "what": "100% discount wrongly rejected (boundary)"
+ },
+ {
+  "id": "B2",
+  "file": "src/cart.js",
+  "buggy": "Math.round(total * (1 - percent / 100))",
+  "fixed": "Math.round(total * (1 - percent / 100) * 100) / 100",
+  "what": "result rounded to whole units instead of cents"
+ },
+ {
+  "id": "B3",
+  "file": "src/pagination.js",
+  "buggy": "items.slice(page * size, (page + 1) * size)",
+  "fixed": "items.slice((page - 1) * size, page * size)",
+  "what": "pages treated as 0-based"
+ },
+ {
+  "id": "B4",
+  "file": "src/pagination.js",
+  "buggy": "  if (!Number.isInteger(size)",
+  "fixed": "  if (page < 1) throw new RangeError('page');\n  if (!Number.isInteger(size)",
+  "what": "page < 1 not rejected (missing guard)"
+ },
+ {
+  "id": "B5",
+  "file": "src/user.js",
+  "buggy": "return age > 18;",
+  "fixed": "return age >= 18;",
+  "what": "age 18 not an adult (boundary)"
+ },
+ {
+  "id": "B6",
+  "file": "src/user.js",
+  "buggy": "return email.trim();",
+  "fixed": "return email.trim().toLowerCase();",
+  "what": "email not lower-cased"
+ },
+ {
+  "id": "B7",
+  "file": "src/auth.js",
+  "buggy": "doc.ownerId == user.id",
+  "fixed": "doc.ownerId === user.id",
+  "what": "loose equality lets \"1\" match 1 (authz)"
+ },
+ {
+  "id": "B8",
+  "file": "src/auth.js",
+  "buggy": "export function canEdit(user, doc) {\n  return",
+  "fixed": "export function canEdit(user, doc) {\n  if (!user) return false;\n  return",
+  "what": "null user throws instead of false"
+ },
+ {
+  "id": "B9",
+  "file": "src/stats.js",
+  "buggy": "const sum = nums.reduce((a, b) => a + b, 0);\n  return sum / nums.length;",
+  "fixed": "const v = nums.filter(Number.isFinite);\n  return v.length ? v.reduce((a, b) => a + b, 0) / v.length : 0;",
+  "what": "NaN on empty array; non-finite values not ignored"
+ }
+]
