@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>qa-test-agent: skill QC tự động cho AI agent</title>
+<meta name="description" content="Skill giúp AI coding agent thiết kế, viết và chạy test cho code của bạn, có dẫn chứng cụ thể cho từng case và kết quả lấy từ test runner thật.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<nav class="nav" aria-label="Main">
+  <div class="wrap">
+    <a class="brand" href="index.html">🧪 qa-test-agent</a>
+    <ul class="nav__menu" id="menu">
+      <li><a href="index.html#features">Tính năng</a></li>
+      <li class="grp"><button class="grp__b" aria-expanded="false" aria-haspopup="true">Bắt đầu</button>
+        <ul class="grp__m"><li><a href="index.html#install">Cài đặt</a></li><li><a href="index.html#usage">Cách dùng</a></li><li><a href="index.html#modes">Chế độ</a></li></ul></li>
+      <li class="grp"><button class="grp__b" aria-expanded="false" aria-haspopup="true">Tài liệu</button>
+        <ul class="grp__m"><li><a href="index.html#how">Cách hoạt động</a></li><li><a href="how-it-works.html">Chi tiết flow</a></li><li><a href="skill.html">SKILL.md</a></li><li><a href="index.html#faq">FAQ</a></li></ul></li>
+    </ul>
+    <div class="nav__r">
+      <div class="seg seg--mini" role="group" aria-label="Language"><button data-lang="vi" aria-pressed="false">VI</button><button data-lang="en" aria-pressed="false">EN</button></div>
+      <a class="gh" href="https://github.com/maitrithanh/qa-test-agent-skill" target="_blank" rel="noopener" aria-label="GitHub repository"><span class="gh__l"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span class="gh__t">GitHub</span></span><span class="gh__r stars" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span data-stars></span></span></a>
+      <button class="nav__burger" aria-controls="menu" aria-expanded="false" aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="b1" d="M4 8h16"/><path class="b2" d="M4 16h16"/></svg></button>
+    </div>
+  </div>
+</nav>
+
+<main id="top">
+  <!-- Hero -->
+  <header class="hero">
+    <div class="wrap">
+      <p class="eyebrow">v1.6.0 · MIT · Claude Code, Codex, Gemini CLI, Copilot</p>
+      <h1>Skill QC tự động<br><span>cho AI coding agent.</span></h1>
+      <p class="lead">Skill giúp AI agent tự thiết kế, viết và chạy test cho code của bạn, rồi báo kết quả dựa trên lần chạy thật của test runner.</p>
+      <div class="cta">
+        <a class="btn btn--filled" href="#install">Cài đặt</a>
+        <a class="gh gh--lg" href="https://github.com/maitrithanh/qa-test-agent-skill" target="_blank" rel="noopener" aria-label="GitHub repository"><span class="gh__l"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span class="gh__t">GitHub</span></span><span class="gh__r stars" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span data-stars></span></span></a>
+        <a class="btn btn--plain" href="#usage">Xem cách dùng ›</a>
+      </div>
+
+      <div class="term" role="img" aria-label="Ví dụ kết quả chạy qa-test-agent">
+        <div class="term__bar"><i></i><i></i><i></i></div>
+<pre><span class="t-acc">$</span> /qa-test-agent
+<span class="t-dim">scan   212 files · 9 changed · 203 cached (không đọc lại)</span>
+<span class="t-dim">design 31 cases · evidence gate: bỏ 4 case không có path:line</span>
+<span class="t-dim">run    vitest --reporter=json</span>
+
+<span class="t-ok">PASS</span>          23
+<span class="t-bad">FAIL-PRODUCT</span>   3   <span class="t-dim">→ src/cart/discount.ts:42  giảm giá âm khi qty = 0</span>
+<span class="t-dim">NEEDS-CONFIRM</span>  1
+<span class="t-dim">BLOCKED</span>        0</pre>
+      </div>
+    </div>
+  </header>
+
+  <!-- Features -->
+  <section id="features">
+    <div class="wrap">
+      <div class="sec-head center">
+        <p class="eyebrow">Giới thiệu</p>
+        <h2 class="h2">Vì sao cần skill này</h2>
+        <p class="lead">Test do AI viết thường pass dễ dàng vì chúng được viết để pass. Skill này đặt mục tiêu ngược lại: tìm ra bug thật và dẫn chứng được bằng code.</p>
+      </div>
+      <div class="grid grid--3">
+        <article class="card"><div class="ico c-blue"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div><h3>Mỗi case đều có dẫn chứng</h3><p>Mỗi test case trỏ tới đoạn code cụ thể (<code>path:line</code>). Không tìm được dẫn chứng thì case bị bỏ.</p></article>
+        <article class="card"><div class="ico c-green"><svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg></div><h3>PASS lấy từ test runner</h3><p>Trạng thái lấy từ JSON report của runner và được đối chiếu với todo, không dựa vào suy đoán.</p></article>
+        <article class="card"><div class="ico c-red"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/></svg></div><h3>Không làm test pass giả</h3><p>Skill không nới assertion, không thêm <code>.skip</code> hay <code>waitForTimeout</code>, không nuốt lỗi và không sửa source để test pass.</p></article>
+        <article class="card"><div class="ico c-orange"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div><h3>Checklist 9 nhóm</h3><p>Mỗi unit được xét theo 9 nhóm: input, quyền và trạng thái, lỗi từ dependency, đồng thời, toàn vẹn dữ liệu, thời gian/locale, bảo mật, UX/a11y và happy path.</p></article>
+        <article class="card"><div class="ico c-purple"><svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.2 8 8 9 4.8-1 8-4.5 8-9V6z"/></svg></div><h3>Audit bảo mật</h3><p>Theo dõi dữ liệu người dùng từ nơi đi vào (source) tới nơi sử dụng (sink) qua 13 nhóm lỗ hổng. Secret được che đi, skill không sửa code và không tấn công hệ thống nào.</p></article>
+        <article class="card"><div class="ico c-teal"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div><h3>Playwright khi bạn đồng ý</h3><p>Skill hỏi trước khi làm việc với UI. Nó khảo sát DOM thật, dùng locator theo role và có sẵn công cụ <code>ui-check.mjs</code>.</p></article>
+        <article class="card"><div class="ico c-indigo"><svg viewBox="0 0 24 24"><path d="M9 3v6L4 19a2 2 0 0 0 1.8 3h12.4A2 2 0 0 0 20 19l-5-10V3M8 3h8"/></svg></div><h3>Test phải biết fail</h3><p>Với test P0, skill cố tình làm hỏng một bản sao của code để kiểm tra test có báo lỗi thật hay không.</p></article>
+        <article class="card"><div class="ico c-orange"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></div><h3>Tiết kiệm token</h3><p>Skill cache theo hash của source tree, nên file không thay đổi sẽ không bị đọc lại.</p></article>
+        <article class="card"><div class="ico c-green"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg></div><h3>Chế độ repro</h3><p>Viết đúng một test fail để tái hiện bug bạn báo. Skill chỉ sửa code khi bạn yêu cầu.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Install -->
+  <section id="install" style="background: var(--bg-secondary)">
+    <div class="wrap">
+      <div class="sec-head center">
+        <p class="eyebrow">Cài đặt</p>
+        <h2 class="h2">Cài đặt theo agent bạn dùng</h2>
+        <p class="lead">Yêu cầu <code>Node ≥ 18</code> để chạy bộ quét cache.</p>
+      </div>
+
+      <div class="seg" role="tablist" aria-label="Chọn agent">
+        <button role="tab" aria-selected="true" aria-controls="p-claude" id="t-claude">Claude Code</button>
+        <button role="tab" aria-selected="false" aria-controls="p-gemini" id="t-gemini" tabindex="-1">Gemini CLI</button>
+        <button role="tab" aria-selected="false" aria-controls="p-codex" id="t-codex" tabindex="-1">Codex</button>
+        <button role="tab" aria-selected="false" aria-controls="p-copilot" id="t-copilot" tabindex="-1">Copilot</button>
+        <button role="tab" aria-selected="false" aria-controls="p-other" id="t-other" tabindex="-1">Khác</button>
+      </div>
+
+      <div id="p-claude" class="panel is-on" role="tabpanel" aria-labelledby="t-claude">
+        <p class="label">Trong phiên Claude Code</p>
+        <div class="code"><pre>/plugin marketplace add maitrithanh/qa-test-agent-skill
+/plugin install qa-test-agent@qa-test-agent-skill</pre><button class="btn btn--sm" data-copy>Chép</button></div>
+        <p class="label">Hoặc từ terminal (cả VS Code extension)</p>
+        <div class="code"><pre>claude plugin marketplace add maitrithanh/qa-test-agent-skill
+claude plugin install qa-test-agent@qa-test-agent-skill</pre><button class="btn btn--sm" data-copy>Chép</button></div>
+        <p class="label">Cập nhật</p>
+        <div class="code"><pre>claude plugin marketplace update qa-test-agent-skill
+claude plugin update qa-test-agent</pre><button class="btn btn--sm" data-copy>Chép</button></div>
+        <p class="note">Hãy khởi động lại Claude Code sau khi cập nhật. Nếu gặp lỗi <code>not installed</code>: cập nhật marketplace không tự cài plugin, nên bạn cần chạy lệnh <code>install</code> trước. Gọi skill bằng <code>/qa-test-agent:qa-test-agent</code>.</p>
+      </div>
+
+      <div id="p-gemini" class="panel" role="tabpanel" aria-labelledby="t-gemini" hidden>
+        <div class="code"><pre>gemini extensions install https://github.com/maitrithanh/qa-test-agent-skill</pre><button class="btn btn--sm" data-copy>Chép</button></div>
+        <p class="note">Cập nhật: <code>gemini extensions update qa-test-agent</code> · Liệt kê: <code>gemini extensions list</code></p>
+      </div>
+
+      <div id="p-codex" class="panel" role="tabpanel" aria-labelledby="t-codex" hidden>
+        <div class="code"><pre>codex plugin marketplace add maitrithanh/qa-test-agent-skill</pre><button class="btn btn--sm" data-copy>Chép</button></div>
+        <p class="note">Mở Plugins directory, chọn <b>QA Test Agent</b> rồi cài. Cập nhật: <code>codex plugin marketplace upgrade qa-test-agent-skill</code></p>
+      </div>
+
+      <div id="p-copilot" class="panel" role="tabpanel" aria-labelledby="t-copilot" hidden>
+        <p class="note" style="margin-bottom:var(--space-2)">Copilot không có marketplace, hãy copy thư mục skill.</p>
+        <div class="code"><pre>git clone https://github.com/maitrithanh/qa-test-agent-skill /tmp/qta
+cp -r /tmp/qta/skills/qa-test-agent .github/skills/        # repo này
+# hoặc: cp -r /tmp/qta/skills/qa-test-agent ~/.copilot/skills/</pre><button class="btn btn--sm" data-copy>Chép</button></div>
+      </div>
+
+      <div id="p-other" class="panel" role="tabpanel" aria-labelledby="t-other" hidden>
+        <p class="note" style="margin-bottom:var(--space-2)">Cài thủ công, không cần plugin (Claude Code / Codex). Agent nào hỗ trợ định dạng <a href="https://agentskills.io">Agent Skills</a> cũng dùng được: chép <code>skills/qa-test-agent/</code> vào thư mục skills của agent đó.</p>
+        <div class="code"><pre>git clone https://github.com/maitrithanh/qa-test-agent-skill /tmp/qta
+cp -r /tmp/qta/skills/qa-test-agent ~/.claude/skills/    # Claude Code, mọi project
+cp -r /tmp/qta/skills/qa-test-agent ~/.agents/skills/    # Codex, mọi project</pre><button class="btn btn--sm" data-copy>Chép</button></div>
+      </div>
+      <p class="note center" style="margin-top:var(--space-5)">Manifest của Gemini, Codex và Copilot được viết theo tài liệu công khai và đã được thử nghiệm ít hơn bản Claude Code. Nếu cài bị lỗi, bạn có thể <a href="https://github.com/maitrithanh/qa-test-agent-skill/issues">mở issue</a>.</p>
+    </div>
+  </section>
+
+  <!-- Usage -->
+  <section id="usage">
+    <div class="wrap">
+      <div class="sec-head center">
+        <p class="eyebrow">Cách dùng</p>
+        <h2 class="h2">Cách dùng cơ bản</h2>
+      </div>
+      <div class="code"><pre>/qa-test-agent                      # mặc định: code mới / vừa đổi
+/qa-test-agent lite                 # cả project, chỉ P0, nhanh
+/qa-test-agent full                 # cả project, sâu, P0–P3
+/qa-test-agent audit                # quét lỗ hổng bảo mật (hoặc: audit &lt;path&gt;)
+/qa-test-agent repro &lt;bug hoặc issue&gt;   # 1 test fail tái hiện bug</pre><button class="btn btn--sm" data-copy>Chép</button></div>
+      <p class="note">Với agent khác, bạn chỉ cần nhắn: <i>“dùng skill qa-test-agent ở chế độ full”</i>.</p>
+
+      <ol class="steps" style="margin-top:var(--space-8)">
+        <li><b>Lần chạy đầu tiên</b>Skill hỏi hai câu: có commit test được tạo vào git hay không, và có dùng Playwright cho frontend hay không. Câu trả lời được lưu trong <code>.qa-agent/config.json</code>.</li>
+        <li><b>Xác nhận kế hoạch</b>Ở chế độ <code>full</code>, skill cho biết tổng số case và hỏi bạn xác nhận trước khi ghi file.</li>
+        <li><b>Đọc báo cáo</b>Báo cáo gồm số liệu, các bug (kèm bước tái hiện và <code>path:line</code>), các case bị chặn và những rủi ro chưa được kiểm tra.</li>
+      </ol>
+
+      <h3 style="font-size:var(--text-title3);margin:var(--space-10) 0 var(--space-2)">Công cụ kiểm tra UI</h3>
+      <p class="note" style="font-size:var(--text-callout)">Công cụ này chạy độc lập, không cần agent (project cần cài sẵn Playwright). Nó mở trang ở các kích thước desktop, tablet và mobile, lưu aria snapshot và ảnh chụp, đồng thời đánh dấu lỗi console, request thất bại và các dấu hiệu lỗi a11y/layout.</p>
+      <div class="code"><pre>node skills/qa-test-agent/scripts/ui-check.mjs \
+  http://localhost:3000/ http://localhost:3000/login --viewports desktop,mobile</pre><button class="btn btn--sm" data-copy>Chép</button></div>
+      <div class="tbl" style="margin-top:var(--space-4)">
+        <table>
+          <thead><tr><th>Tùy chọn</th><th>Ý nghĩa</th></tr></thead>
+          <tbody>
+            <tr><td><code>--viewports</code></td><td><code>desktop</code> 1280×800, <code>tablet</code> 768×1024, <code>mobile</code> 375×667; ngăn cách bằng dấu phẩy</td></tr>
+            <tr><td><code>--out DIR</code></td><td>Thư mục xuất (mặc định <code>.qa-agent/logs/ui-check</code>)</td></tr>
+            <tr><td><code>--storage FILE</code></td><td><code>storageState</code> của Playwright cho trang cần đăng nhập</td></tr>
+            <tr><td><code>--timeout MS</code></td><td>Timeout điều hướng (mặc định 15000)</td></tr>
+            <tr><td><code>--strict</code></td><td>Thoát mã 1 nếu có lead (mặc định 0)</td></tr>
+            <tr><td><code>--allow-remote</code></td><td>Cho phép host không phải local, chỉ dùng với site của bạn</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modes -->
+  <section id="modes" style="background: var(--bg-secondary)">
+    <div class="wrap">
+      <div class="sec-head center">
+        <p class="eyebrow">Chế độ</p>
+        <h2 class="h2">Các chế độ chạy</h2>
+      </div>
+      <div class="tbl" style="background:var(--bg-primary)">
+        <table>
+          <thead><tr><th>Chế độ</th><th>Phạm vi</th><th>Độ sâu</th><th>Loại test</th></tr></thead>
+          <tbody>
+            <tr><td><code>default</code></td><td>Code đổi + file bị ảnh hưởng</td><td>P0–P2</td><td>unit, integration, e2e cho route đổi</td></tr>
+            <tr><td><code>lite</code></td><td>Cả project qua cache summary</td><td>chỉ P0</td><td>unit lõi + smoke e2e</td></tr>
+            <tr><td><code>full</code></td><td>Cả project, đọc sâu</td><td>P0–P3</td><td>unit, integration, e2e, a11y, responsive, regression, phi chức năng</td></tr>
+            <tr><td><code>repro</code></td><td>Một bug được báo</td><td>1 test fail</td><td>tầng rẻ nhất mà vẫn tái hiện được</td></tr>
+            <tr><td><code>audit</code></td><td>Cả project hoặc 1 path</td><td>Critical → Info</td><td>truy vết source→sink + test hồi quy bảo mật</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- How -->
+  <section id="how">
+    <div class="wrap">
+      <div class="sec-head center">
+        <p class="eyebrow">Cách hoạt động</p>
+        <h2 class="h2">Quy trình tổng quan</h2>
+        <p class="lead">Mỗi bước có một điều kiện kiểm tra; chưa đạt thì skill không chuyển sang bước sau.</p>
+      </div>
+      <ol class="steps">
+        <li><b>Scan</b>Hash source tree, chỉ đọc lại file đã đổi.</li>
+        <li><b>Thiết kế</b>Checklist 9 nhóm cho từng unit, thêm case cho guard còn thiếu.</li>
+        <li><b>Evidence gate</b>Grep từng <code>path:line</code>. Case không chứng minh được bị xóa.</li>
+        <li><b>Viết test</b>Theo convention của project, không sửa source.</li>
+        <li><b>Chạy runner thật</b>Đọc JSON report, ánh xạ về <code>TC-xxx</code>.</li>
+        <li><b>Báo cáo</b>PASS chỉ khi runner xác nhận.</li>
+      </ol>
+      <div class="life" aria-label="Vòng đời case">
+        <span>TODO</span><span>→</span><span>WRITTEN</span><span>→</span>
+        <span class="ok">PASS</span><span class="bad">FAIL-PRODUCT</span><span>FAIL-TEST</span><span class="warn">FLAKY</span><span>BLOCKED</span><span class="warn">NEEDS-CONFIRM</span>
+      </div>
+      <div class="code" style="margin-top:var(--space-8)"><pre>.qa-agent/            <span class="t-dim"># gitignored</span>
+  config.json  manifest.json
+  cache/      <span class="t-dim"># hash source tree + summary từng file</span>
+  todo/       <span class="t-dim"># nguồn sự thật của mọi test case</span>
+  reports/    <span class="t-dim"># số liệu, bug, bị chặn, rủi ro chưa phủ</span>
+  logs/       <span class="t-dim"># output thô của runner</span></pre></div>
+      <p class="note center" style="margin-top:var(--space-4)">Chi tiết quy tắc: <a href="how-it-works.html">flow chi tiết</a> · <a href="skill.html">SKILL.md</a> · Bản tiếng Việt: <a href="vi/">docs/vi</a> · Bộ eval 9 bug cài sẵn: <a href="../evals/">evals/</a></p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" style="background: var(--bg-secondary)">
+    <div class="wrap" style="max-width:720px">
+      <div class="sec-head center"><p class="eyebrow">FAQ</p><h2 class="h2">Câu hỏi thường gặp</h2></div>
+      <details name="faq"><summary>Skill có sửa source code của tôi không?</summary><p>Không. Skill không sửa source để test pass, không tự cài package và không đổi config dùng chung khi chưa hỏi bạn. Nếu thiếu <code>data-testid</code>, nó chỉ đề xuất thêm.</p></details>
+      <details name="faq"><summary>Nếu code có vẻ bị bug thì sao?</summary><p>Skill sẽ không viết test khẳng định một hành vi sai. Case đó được đánh dấu <code>NEEDS-CONFIRM</code> (nghi có bug). Lỗi đã được xác nhận thì báo là <code>FAIL-PRODUCT</code>, kèm bước tái hiện và <code>path:line</code>.</p></details>
+      <details name="faq"><summary>Hỗ trợ runner nào?</summary><p>Skill theo convention sẵn có của project, ví dụ Vitest, Jest, Playwright hoặc runner khác mà nó nhận ra. Nếu project chưa có, skill đề xuất một runner và hỏi bạn trước khi cài.</p></details>
+      <details name="faq"><summary>Skill trả lời bằng ngôn ngữ nào?</summary><p>Bản gốc của skill viết bằng tiếng Anh, nhưng skill trả lời theo ngôn ngữ bạn đang dùng. Ngoài ra có bản tiếng Việt đầy đủ trong <code>docs/vi/</code>.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><a href="https://github.com/maitrithanh/qa-test-agent-skill">GitHub <span class="stars" hidden>★ <span data-stars></span></span></a><a href="https://github.com/maitrithanh/qa-test-agent-skill/issues">Issues</a><a href="https://github.com/maitrithanh/qa-test-agent-skill/blob/main/LICENSE">MIT License</a></p>
+    <p style="margin-top:var(--space-2)">qa-test-agent v1.6.0</p>
+  </div>
+</footer>
+
+<script>
+window.PAGE = { EN: {
+"Tính năng": "Features",
+"Bắt đầu": "Get started",
+"Cài đặt": "Install",
+"Cách dùng": "Usage",
+"Chế độ": "Modes",
+"Tài liệu": "Docs",
+"Cách hoạt động": "How it works",
+"Chi tiết flow": "Full flow",
+  'Tính năng': 'Features', 'Cài đặt': 'Install', 'Cách dùng': 'Usage', 'Chế độ': 'Modes',
+  'Cách hoạt động': 'How it works', 'Chi tiết flow': 'Full flow', 'Xem cách dùng ›': 'See usage ›',
+  'Skill QC tự động<br><span>cho AI coding agent.</span>': 'An automated QA skill<br><span>for AI coding agents.</span>',
+  'Skill giúp AI agent tự thiết kế, viết và chạy test cho code của bạn, rồi báo kết quả dựa trên lần chạy thật của test runner.': 'This skill lets your AI agent design, write and run tests for your code, then report results based on what the test runner actually did.',
+  'Giới thiệu': 'About',
+  'Vì sao cần skill này': 'Why this skill',
+  'Test do AI viết thường pass dễ dàng vì chúng được viết để pass. Skill này đặt mục tiêu ngược lại: tìm ra bug thật và dẫn chứng được bằng code.': 'Tests written by AI tend to pass easily because they were written to pass. This skill aims at the opposite: finding real bugs and backing each one with code.',
+  'Mỗi case đều có dẫn chứng': 'Every case has evidence',
+  'Mỗi test case trỏ tới đoạn code cụ thể (<code>path:line</code>). Không tìm được dẫn chứng thì case bị bỏ.': 'Every test case points to a specific piece of code (<code>path:line</code>). If no evidence can be found, the case is dropped.',
+  'PASS lấy từ test runner': 'PASS comes from the runner',
+  'Trạng thái lấy từ JSON report của runner và được đối chiếu với todo, không dựa vào suy đoán.': 'Status comes from the runner’s JSON report and is cross-checked against the todo, never from guesses.',
+  'Không làm test pass giả': 'No fake passes',
+  'Skill không nới assertion, không thêm <code>.skip</code> hay <code>waitForTimeout</code>, không nuốt lỗi và không sửa source để test pass.': 'It never loosens assertions, adds <code>.skip</code> or <code>waitForTimeout</code>, swallows errors, or edits source to make a test pass.',
+  'Checklist 9 nhóm': '9-group checklist',
+  'Mỗi unit được xét theo 9 nhóm: input, quyền và trạng thái, lỗi từ dependency, đồng thời, toàn vẹn dữ liệu, thời gian/locale, bảo mật, UX/a11y và happy path.': 'Each unit is checked against 9 groups: input, permissions and state, dependency failures, concurrency, data integrity, time/locale, security, UX/a11y and the happy path.',
+  'Audit bảo mật': 'Security audit',
+  'Theo dõi dữ liệu người dùng từ nơi đi vào (source) tới nơi sử dụng (sink) qua 13 nhóm lỗ hổng. Secret được che đi, skill không sửa code và không tấn công hệ thống nào.': 'Follows user input from where it enters (source) to where it is used (sink) across 13 vulnerability groups. Secrets are masked, and the skill neither edits code nor attacks any system.',
+  'Playwright khi bạn đồng ý': 'Playwright, if you agree',
+  'Skill hỏi trước khi làm việc với UI. Nó khảo sát DOM thật, dùng locator theo role và có sẵn công cụ <code>ui-check.mjs</code>.': 'It asks before touching the UI. It surveys the real DOM, uses role-based locators, and includes the <code>ui-check.mjs</code> tool.',
+  'Test phải biết fail': 'Tests must be able to fail',
+  'Với test P0, skill cố tình làm hỏng một bản sao của code để kiểm tra test có báo lỗi thật hay không.': 'For P0 tests, the skill deliberately breaks a copy of the code to check that the test really fails.',
+  'Tiết kiệm token': 'Token-friendly',
+  'Skill cache theo hash của source tree, nên file không thay đổi sẽ không bị đọc lại.': 'The skill caches by source-tree hash, so unchanged files are not read again.',
+  'Chế độ repro': 'Repro mode',
+  'Viết đúng một test fail để tái hiện bug bạn báo. Skill chỉ sửa code khi bạn yêu cầu.': 'Writes a single failing test that reproduces the bug you reported. It only fixes code if you ask.',
+  'Cài đặt theo agent bạn dùng': 'Install for your agent',
+  'Yêu cầu <code>Node ≥ 18</code> để chạy bộ quét cache.': 'Requires <code>Node ≥ 18</code> to run the cache scanner.',
+  'Khác': 'Other',
+  'Trong phiên Claude Code': 'Inside a Claude Code session',
+  'Hoặc từ terminal (cả VS Code extension)': 'Or from a terminal (also the VS Code extension)',
+  'Cập nhật': 'Update',
+  'Hãy khởi động lại Claude Code sau khi cập nhật. Nếu gặp lỗi <code>not installed</code>: cập nhật marketplace không tự cài plugin, nên bạn cần chạy lệnh <code>install</code> trước. Gọi skill bằng <code>/qa-test-agent:qa-test-agent</code>.': 'Restart Claude Code after updating. If you see <code>not installed</code>: updating a marketplace does not install its plugins, so run <code>install</code> first. Invoke the skill with <code>/qa-test-agent:qa-test-agent</code>.',
+  'Cập nhật: <code>gemini extensions update qa-test-agent</code> · Liệt kê: <code>gemini extensions list</code>': 'Update: <code>gemini extensions update qa-test-agent</code> · List: <code>gemini extensions list</code>',
+  'Mở Plugins directory, chọn <b>QA Test Agent</b> rồi cài. Cập nhật: <code>codex plugin marketplace upgrade qa-test-agent-skill</code>': 'Open the Plugins directory, choose <b>QA Test Agent</b> and install. Update: <code>codex plugin marketplace upgrade qa-test-agent-skill</code>',
+  'Copilot không có marketplace, hãy copy thư mục skill.': 'Copilot has no marketplace; copy the skill folder.',
+  'Cài thủ công, không cần plugin (Claude Code / Codex). Agent nào hỗ trợ định dạng <a href="https://agentskills.io">Agent Skills</a> cũng dùng được: chép <code>skills/qa-test-agent/</code> vào thư mục skills của agent đó.': 'Manual install, no plugin needed (Claude Code / Codex). Any agent that supports the <a href="https://agentskills.io">Agent Skills</a> format works: copy <code>skills/qa-test-agent/</code> into that agent’s skills directory.',
+  'Manifest của Gemini, Codex và Copilot được viết theo tài liệu công khai và đã được thử nghiệm ít hơn bản Claude Code. Nếu cài bị lỗi, bạn có thể <a href="https://github.com/maitrithanh/qa-test-agent-skill/issues">mở issue</a>.': 'The Gemini, Codex and Copilot manifests follow public documentation and have been tested less than the Claude Code one. If an install fails, please <a href="https://github.com/maitrithanh/qa-test-agent-skill/issues">open an issue</a>.',
+  'Cách dùng cơ bản': 'Basic usage',
+  'Với agent khác, bạn chỉ cần nhắn: <i>“dùng skill qa-test-agent ở chế độ full”</i>.': 'With other agents, just write: <i>“use the qa-test-agent skill in full mode”</i>.',
+  '<b>Lần chạy đầu tiên</b>Skill hỏi hai câu: có commit test được tạo vào git hay không, và có dùng Playwright cho frontend hay không. Câu trả lời được lưu trong <code>.qa-agent/config.json</code>.': '<b>First run</b>The skill asks two questions: whether to commit the generated tests to git, and whether to use Playwright for the frontend. Your answers are saved in <code>.qa-agent/config.json</code>.',
+  '<b>Xác nhận kế hoạch</b>Ở chế độ <code>full</code>, skill cho biết tổng số case và hỏi bạn xác nhận trước khi ghi file.': '<b>Confirm the plan</b>In <code>full</code> mode the skill shows the total number of cases and asks for your confirmation before writing any file.',
+  '<b>Đọc báo cáo</b>Báo cáo gồm số liệu, các bug (kèm bước tái hiện và <code>path:line</code>), các case bị chặn và những rủi ro chưa được kiểm tra.': '<b>Read the report</b>The report lists the counts, the bugs (with repro steps and <code>path:line</code>), blocked cases and risks that were not covered.',
+  'Công cụ kiểm tra UI': 'UI check tool',
+  'Công cụ này chạy độc lập, không cần agent (project cần cài sẵn Playwright). Nó mở trang ở các kích thước desktop, tablet và mobile, lưu aria snapshot và ảnh chụp, đồng thời đánh dấu lỗi console, request thất bại và các dấu hiệu lỗi a11y/layout.': 'This tool runs on its own, with no agent needed (your project must already have Playwright). It opens pages at desktop, tablet and mobile sizes, saves aria snapshots and screenshots, and flags console errors, failed requests and possible a11y/layout problems.',
+  'Tùy chọn': 'Option', 'Ý nghĩa': 'Meaning',
+  '<code>desktop</code> 1280×800, <code>tablet</code> 768×1024, <code>mobile</code> 375×667; ngăn cách bằng dấu phẩy': '<code>desktop</code> 1280×800, <code>tablet</code> 768×1024, <code>mobile</code> 375×667; comma-separated',
+  'Thư mục xuất (mặc định <code>.qa-agent/logs/ui-check</code>)': 'Output folder (default <code>.qa-agent/logs/ui-check</code>)',
+  '<code>storageState</code> của Playwright cho trang cần đăng nhập': 'Playwright <code>storageState</code> for logged-in pages',
+  'Timeout điều hướng (mặc định 15000)': 'Navigation timeout (default 15000)',
+  'Thoát mã 1 nếu có lead (mặc định 0)': 'Exit 1 if any lead is found (default 0)',
+  'Cho phép host không phải local, chỉ dùng với site của bạn': 'Allow non-local hosts; only for targets you own',
+  'Các chế độ chạy': 'Run modes',
+  'Phạm vi': 'Scope', 'Độ sâu': 'Depth', 'Loại test': 'Test types',
+  'Code đổi + file bị ảnh hưởng': 'Changed code + files it impacts',
+  'unit, integration, e2e cho route đổi': 'unit, integration, e2e for changed routes',
+  'Cả project qua cache summary': 'Whole project, via cache summaries',
+  'chỉ P0': 'P0 only',
+  'unit lõi + smoke e2e': 'core unit + smoke e2e',
+  'Cả project, đọc sâu': 'Whole project, deep read',
+  'unit, integration, e2e, a11y, responsive, regression, phi chức năng': 'unit, integration, e2e, a11y, responsive, regression, non-functional',
+  'Một bug được báo': 'One reported bug',
+  '1 test fail': '1 failing test',
+  'tầng rẻ nhất mà vẫn tái hiện được': 'the cheapest layer that reproduces it',
+  'Cả project hoặc 1 path': 'Whole project or a path',
+  'truy vết source→sink + test hồi quy bảo mật': 'source→sink tracing + security regression tests',
+  'Quy trình tổng quan': 'Overview of the pipeline',
+  'Mỗi bước có một điều kiện kiểm tra; chưa đạt thì skill không chuyển sang bước sau.': 'Each step has a check; until it passes, the skill does not move on.',
+  '<b>Scan</b>Hash source tree, chỉ đọc lại file đã đổi.': '<b>Scan</b>Hash the source tree; re-read only changed files.',
+  '<b>Thiết kế</b>Checklist 9 nhóm cho từng unit, thêm case cho guard còn thiếu.': '<b>Design</b>9-group checklist per unit, plus gap cases for missing guards.',
+  '<b>Evidence gate</b>Grep từng <code>path:line</code>. Case không chứng minh được bị xóa.': '<b>Evidence gate</b>Grep every <code>path:line</code>. Unproven cases are dropped.',
+  '<b>Viết test</b>Theo convention của project, không sửa source.': '<b>Write tests</b>Follow the project’s conventions; never touch source.',
+  '<b>Chạy runner thật</b>Đọc JSON report, ánh xạ về <code>TC-xxx</code>.': '<b>Run the real runner</b>Read the JSON report, map back to <code>TC-xxx</code>.',
+  '<b>Báo cáo</b>PASS chỉ khi runner xác nhận.': '<b>Report</b>PASS only when the runner confirms.',
+  'Chi tiết quy tắc: <a href="how-it-works.html">flow chi tiết</a> · <a href="skill.html">SKILL.md</a> · Bản tiếng Việt: <a href="vi/">docs/vi</a> · Bộ eval 9 bug cài sẵn: <a href="../evals/">evals/</a>': 'Full rules: <a href="how-it-works.html">detailed flow</a> · <a href="skill.html">SKILL.md</a> · Vietnamese copy: <a href="vi/">docs/vi</a> · Eval app with 9 planted bugs: <a href="../evals/">evals/</a>',
+  'Câu hỏi thường gặp': 'Frequently asked questions',
+  'Skill có sửa source code của tôi không?': 'Will the skill modify my source code?',
+  'Không. Skill không sửa source để test pass, không tự cài package và không đổi config dùng chung khi chưa hỏi bạn. Nếu thiếu <code>data-testid</code>, nó chỉ đề xuất thêm.': 'No. The skill never edits source to make tests pass, never installs packages and never changes shared config without asking. If a <code>data-testid</code> is missing, it only suggests adding one.',
+  'Nếu code có vẻ bị bug thì sao?': 'What if the code looks buggy?',
+  'Skill sẽ không viết test khẳng định một hành vi sai. Case đó được đánh dấu <code>NEEDS-CONFIRM</code> (nghi có bug). Lỗi đã được xác nhận thì báo là <code>FAIL-PRODUCT</code>, kèm bước tái hiện và <code>path:line</code>.': 'The skill will not write a test that asserts wrong behavior. That case is marked <code>NEEDS-CONFIRM</code> as a suspected bug. Confirmed failures are reported as <code>FAIL-PRODUCT</code> with repro steps and <code>path:line</code>.',
+  'Hỗ trợ runner nào?': 'Which test runners are supported?',
+  'Skill theo convention sẵn có của project, ví dụ Vitest, Jest, Playwright hoặc runner khác mà nó nhận ra. Nếu project chưa có, skill đề xuất một runner và hỏi bạn trước khi cài.': 'It follows your project’s existing convention, such as Vitest, Jest, Playwright or another runner it recognizes. If there is none, it suggests one and asks before installing.',
+  'Skill trả lời bằng ngôn ngữ nào?': 'Which language does it reply in?',
+  'Bản gốc của skill viết bằng tiếng Anh, nhưng skill trả lời theo ngôn ngữ bạn đang dùng. Ngoài ra có bản tiếng Việt đầy đủ trong <code>docs/vi/</code>.': 'The skill itself is written in English, but it replies in the language you write in. A full Vietnamese copy is also available in <code>docs/vi/</code>.',
+},
+FRAG: {
+  '# mặc định: code mới / vừa đổi': '# default: new/changed code only',
+  '# cả project, chỉ P0, nhanh': '# whole project, P0 only, quick',
+  '# cả project, sâu, P0–P3': '# whole project, deep, P0–P3',
+  '# quét lỗ hổng bảo mật (hoặc: audit &lt;path&gt;)': '# security scan (or: audit &lt;path&gt;)',
+  '&lt;bug hoặc issue&gt;   # 1 test fail tái hiện bug': '&lt;bug or issue&gt;   # one failing test that reproduces it',
+  'scan   212 files · 9 changed · 203 cached (không đọc lại)': 'scan   212 files · 9 changed · 203 cached (not re-read)',
+  'design 31 cases · evidence gate: bỏ 4 case không có path:line': 'design 31 cases · evidence gate: dropped 4 with no path:line',
+  'giảm giá âm khi qty = 0': 'negative discount when qty = 0',
+  '# repo này': '# this repo',
+  '# hoặc: cp -r': '# or: cp -r',
+  '# Claude Code, mọi project': '# Claude Code, all projects',
+  '# Codex, mọi project': '# Codex, all projects',
+  '# hash source tree + summary từng file': '# source-tree hashes + per-file summaries',
+  '# nguồn sự thật của mọi test case': '# source of truth for every test case',
+  '# số liệu, bug, bị chặn, rủi ro chưa phủ': '# counts, bugs, blocked, uncovered risks',
+  '# output thô của runner': '# raw runner output',
+},
+META: {
+  vi: ['qa-test-agent: skill QC tự động cho AI agent', 'Skill giúp AI coding agent thiết kế, viết và chạy test cho code của bạn, có dẫn chứng cụ thể cho từng case và kết quả lấy từ test runner thật.', 'Chép', 'Đã chép'],
+  en: ['qa-test-agent: an automated QA skill for AI agents', 'A skill that helps AI coding agents design, write and run tests for your code, with concrete evidence for every case and results taken from a real test runner.', 'Copy', 'Copied'],
+}
+};
+</script>
+<script src="site.js"></script>
+</body>
+</html>

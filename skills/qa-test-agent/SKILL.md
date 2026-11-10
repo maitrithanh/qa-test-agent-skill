@@ -21,7 +21,7 @@ Talk to the user in **the language they write in**. Generated test code, identif
 4. **The todo is the source of truth.** Every case goes through the todo file; numbers in the report must match the todo and the runner log.
 5. **Follow the project's conventions** (runner, folders, naming, aliases, mock libs). Use the default layout in section 8 only when the project has none.
 6. **Do not install packages, edit shared config, or edit source** without asking the user.
-7. **Expectations need a source.** Expected values come from, in this order: the user → PR/issue/commit text (`git log --format=%B` over the diff range; `gh pr view` read-only if available) → spec/OpenAPI/types/docs → existing tests → the code itself, only when the behavior is clearly intentional. If the code looks wrong (off-by-one, missing null handling, …) → do **not** write a test asserting the wrong behavior; mark it `NEEDS-CONFIRM` and record it as a suspected bug.
+7. **Expectations need a source.** Expected values come from, in this order: the user → PR/issue/commit text (`git log --format=%B` over the diff range; `gh pr view` read-only if available) → spec/OpenAPI/types/docs (asked for, section 6.1) → existing tests → the code itself, only when the behavior is clearly intentional. If the code looks wrong (off-by-one, missing null handling, …) → do **not** write a test asserting the wrong behavior; mark it `NEEDS-CONFIRM` and record it as a suspected bug.
 8. **Never read, scan or Grep secret files**: `.env`, `.env.*` (except `.env.example`/`.env.sample`), `*.pem`, `*.key`, `id_rsa*`, `*.p12`, `*.keystore`, `credentials.json`, `secrets.{json,yml,yaml,toml}`. (Code files such as `secrets.ts` are tested normally, but never print secret values.) Always exclude these from Grep/Glob (e.g. `--glob '!.env*'`); do not open them even when you need an environment variable — ask the user for the variable name, or read `.env.example`. Never print environment variable values into logs, reports, todos or summaries. Tests reference variables only via `process.env.X` and never write values into files.
 9. **Save tokens:** read the cache summary first; open a file only when its hash changed or you must write tests for it, and read only the relevant part (offset/limit).
 10. **Obey section 14**: budgets, circuit breakers and STOP-AND-REPORT override any urge to keep going.
@@ -96,6 +96,10 @@ Run `node .qa-agent/bin/scan.mjs` at the start of every run (copy `scripts/scan.
 Read the intent of the change once: `git log --format=%B <range>` (and the PR description if `gh` is available). It is the oracle for expectations (rule 7) and tells you what the author meant to change.
 
 If the scope is empty → report "no new code" and stop.
+
+### 6.1 Spec source (ask every run, not `audit`)
+
+Tests derived only from code can only mirror it. Before designing cases, **ask the user** (one question, skip if they already named a doc) whether a requirement document exists, and offer options: repo path (list Glob candidates by name only), pasted text, file outside the repo, link (Jira/Confluence/Notion/GitHub issue; only if a tool can read it, else paste/export), or none. Never assume or crawl docs on your own. If a doc is given → **read [`references/spec-mode.md`](references/spec-mode.md)**: read doc before code, list `REQ-n` requirements, derive cases from them, report drift and a REQ→test traceability table.
 
 **lite** — all source files, prioritizing: routes/pages, services/API, stores, utils with branching logic. Skip purely presentational files with no logic.
 

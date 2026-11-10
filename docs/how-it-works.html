@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Cách hoạt động — qa-test-agent</title>
+<meta name="description" content="Mô tả chi tiết flow của skill qa-test-agent: scan, phạm vi, thiết kế case, evidence gate, chạy, xác minh, báo cáo và các giới hạn an toàn.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<nav class="nav" aria-label="Main">
+  <div class="wrap">
+    <a class="brand" href="index.html">🧪 qa-test-agent</a>
+    <ul class="nav__menu" id="menu">
+      <li><a href="index.html#features">Tính năng</a></li>
+      <li class="grp"><button class="grp__b" aria-expanded="false" aria-haspopup="true">Bắt đầu</button>
+        <ul class="grp__m"><li><a href="index.html#install">Cài đặt</a></li><li><a href="index.html#usage">Cách dùng</a></li><li><a href="index.html#modes">Chế độ</a></li></ul></li>
+      <li class="grp"><button class="grp__b" aria-expanded="false" aria-haspopup="true">Tài liệu</button>
+        <ul class="grp__m"><li><a href="index.html#how">Cách hoạt động</a></li><li><a href="how-it-works.html">Chi tiết flow</a></li><li><a href="skill.html">SKILL.md</a></li><li><a href="index.html#faq">FAQ</a></li></ul></li>
+    </ul>
+    <div class="nav__r">
+      <div class="seg seg--mini" role="group" aria-label="Language"><button data-lang="vi" aria-pressed="false">VI</button><button data-lang="en" aria-pressed="false">EN</button></div>
+      <a class="gh" href="https://github.com/maitrithanh/qa-test-agent-skill" target="_blank" rel="noopener" aria-label="GitHub repository"><span class="gh__l"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span class="gh__t">GitHub</span></span><span class="gh__r stars" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span data-stars></span></span></a>
+      <button class="nav__burger" aria-controls="menu" aria-expanded="false" aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="b1" d="M4 8h16"/><path class="b2" d="M4 16h16"/></svg></button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <header class="hero" id="flow">
+    <div class="wrap">
+      <p class="eyebrow">Cách hoạt động</p>
+      <h1>Skill làm việc<br><span>như thế nào.</span></h1>
+      <p class="lead">Skill chạy theo một quy trình cố định gồm 8 giai đoạn. Mỗi giai đoạn có điều kiện kiểm tra riêng, và trạng thái của mọi test case đều được ghi trong một file todo duy nhất.</p>
+    </div>
+  </header>
+
+  <section style="padding-top:var(--space-4)">
+    <div class="wrap">
+      <ol class="flow">
+        <li><b>Scan</b>Hash source tree, chỉ đọc lại file đã đổi</li>
+        <li><b>Phạm vi</b>Chọn file theo chế độ và git diff</li>
+        <li><b>Thiết kế</b>Checklist 9 nhóm, ghi vào todo</li>
+        <li><b>Evidence gate</b>Grep từng path:line, case không có bằng chứng bị xóa</li>
+        <li><b>Viết test</b>Theo convention của project</li>
+        <li><b>Chạy</b>Runner thật, output JSON</li>
+        <li><b>Xác minh</b>Ánh xạ TC-xxx, đối chiếu số liệu, thử phá test</li>
+        <li><b>Báo cáo</b>Số liệu, bug, rủi ro chưa phủ</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Rules -->
+  <section>
+    <div class="wrap">
+      <div class="sec-head center">
+        <p class="eyebrow">Nguyên tắc bắt buộc</p>
+        <h2 class="h2">Sáu nguyên tắc skill luôn tuân thủ</h2>
+        <p class="lead">Mọi bước bên dưới đều phải tuân theo các nguyên tắc này.</p>
+      </div>
+      <div class="grid grid--3">
+        <article class="card"><h3>Không tự bịa test case</h3><p>Mỗi case cần bằng chứng dạng <code>path:line</code> (hàm, nhánh <code>if</code>, prop, route, selector, endpoint). Trước khi viết test phải Grep xác nhận. Không có bằng chứng thì xóa case.</p></article>
+        <article class="card"><h3>Không tự cho pass</h3><p><code>PASS</code> chỉ được ghi sau khi runner thật chạy và JSON report xác nhận đúng test mang ID đó đã pass. Không suy đoán.</p></article>
+        <article class="card"><h3>Không làm test pass giả</h3><p>Cấm sửa source cho test qua, nới assertion, đổi expected cho khớp actual, <code>.skip</code>/<code>.only</code>, tăng timeout tùy tiện, <code>waitForTimeout</code>, nuốt lỗi, update snapshot mù.</p></article>
+        <article class="card"><h3>Todo là nguồn dữ liệu chính</h3><p>Mọi case đi qua file todo. Số liệu trong báo cáo phải khớp todo và log của runner.</p></article>
+        <article class="card"><h3>Kỳ vọng phải có nguồn</h3><p>Thứ tự: người dùng → PR/issue/commit → spec/OpenAPI/types/docs → test sẵn có → chính code (chỉ khi hành vi rõ ràng là chủ ý). Code trông sai thì không viết test khẳng định sai mà đánh dấu <code>NEEDS-CONFIRM</code>.</p></article>
+        <article class="card"><h3>Không động vào secret</h3><p>Không đọc, scan hay Grep <code>.env*</code>, <code>*.pem</code>, <code>*.key</code>, <code>credentials.json</code>… Không in giá trị biến môi trường ra log hay báo cáo. Cần biến thì hỏi tên, hoặc đọc <code>.env.example</code>.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Steps -->
+  <section id="steps" style="background: var(--bg-secondary)">
+    <div class="wrap" style="max-width:760px">
+      <div class="sec-head center">
+        <p class="eyebrow">Từng bước</p>
+        <h2 class="h2">Khi bạn chạy <code>/qa-test-agent</code>, skill làm gì?</h2>
+      </div>
+      <ol class="tl">
+        <li><div class="tl__n">0</div><div>
+          <h3>Khởi tạo lần đầu</h3>
+          <p>Chưa có <code>.qa-agent/config.json</code> thì skill hỏi hai câu rồi lưu lại, lần sau không hỏi nữa.</p>
+          <ul class="list">
+            <li><b>Q1 Git:</b> commit test sinh ra vào repo hay giữ cục bộ. Skill ghi một khối <code>.gitignore</code> theo lựa chọn, không bao giờ ghi trùng.</li>
+            <li><b>Q2 Playwright:</b> có / không / hỏi mỗi lần, áp dụng cho frontend. Chế độ <code>audit</code> không bao giờ hỏi Q2.</li>
+            <li>Nếu todo lần trước còn case <code>TODO</code>/<code>WRITTEN</code>, skill hỏi bạn muốn <b>tiếp tục</b> hay <b>làm lại</b>.</li>
+          </ul>
+        </div></li>
+
+        <li><div class="tl__n">1</div><div>
+          <h3>Nhận diện project</h3>
+          <p>Chỉ đọc các file cấu hình có thật (<code>package.json</code>, lockfile, <code>tsconfig</code>, config của vitest/jest/playwright, <code>pyproject.toml</code>, <code>go.mod</code>…) và ghi vào <code>config.project</code>.</p>
+          <div class="chips"><span>package manager</span><span>language</span><span>framework</span><span>runner</span><span>Testing Library · MSW</span><span>test layout</span><span>path alias</span><span>router · store</span></div>
+          <p style="margin-top:var(--space-3)">Thiếu test runner thì skill gợi ý một cái phù hợp (Vitest cho Vite/Vue, Jest hoặc Vitest cho React) và <b>hỏi trước khi cài</b>.</p>
+        </div></li>
+
+        <li><div class="tl__n">2</div><div>
+          <h3>Scan và cache source tree</h3>
+          <p><code>node .qa-agent/bin/scan.mjs</code> băm từng file và so với lần chạy trước. File không đổi dùng lại summary JSON đã lưu, nên không bị đọc lại.</p>
+          <ul class="list">
+            <li>Cache nằm ở <code>.qa-agent/cache/source-tree.json</code> (path → hash) và <code>cache/summaries/*.json</code>.</li>
+            <li>Skill dựa vào <code>staleSummary</code>, không dựa vào <code>changed</code>. Scan cũng báo file bị ảnh hưởng (<code>impacted</code>) và test liên quan (<code>impactedTests</code>).</li>
+          </ul>
+        </div></li>
+
+        <li><div class="tl__n">3</div><div>
+          <h3>Xác định phạm vi</h3>
+          <div class="tbl" style="margin-top:var(--space-3)"><table style="min-width:520px">
+            <thead><tr><th>Chế độ</th><th>Phạm vi</th></tr></thead>
+            <tbody>
+              <tr><td><code>default</code></td><td>Hợp của: <code>git diff</code> từ <code>lastRunCommit</code>, thay đổi chưa stage, đã stage, file untracked. Bỏ file test.</td></tr>
+              <tr><td><code>lite</code></td><td>Cả project, ưu tiên route/page, service/API, store, util có rẽ nhánh. Bỏ file thuần hiển thị.</td></tr>
+              <tr><td><code>full</code></td><td>Toàn bộ file nguồn.</td></tr>
+            </tbody>
+          </table></div>
+          <ul class="list">
+            <li>File <b>bị ảnh hưởng</b> chỉ chạy test sẵn có để hồi quy (<code>vitest related</code>, <code>jest --findRelatedTests</code>), không sinh case mới.</li>
+            <li>Skill đọc ý định thay đổi một lần (<code>git log --format=%B</code>, mô tả PR nếu có <code>gh</code>). Đây là nguồn kỳ vọng.</li>
+          </ul>
+          <div class="gate">Phạm vi rỗng thì báo “không có code mới” và dừng.</div>
+        </div></li>
+
+        <li><div class="tl__n">4</div><div>
+          <h3>Thiết kế test case</h3>
+          <p>Với mỗi file trong phạm vi, skill áp dụng các kỹ thuật phù hợp và ghi kỹ thuật vào từng case.</p>
+          <div class="chips"><span>equivalence · boundary</span><span>decision table / branch</span><span>state transition</span><span>error guessing</span><span>frontend: render · userEvent · a11y</span><span>integration + mock API</span><span>e2e</span></div>
+          <p style="margin-top:var(--space-4)">Mỗi unit đi qua <b>9 nhóm</b>. Nhóm nào cũng ra ít nhất 1 case, hoặc ghi <code>N/A (lý do)</code> vào ma trận phủ.</p>
+          <div class="chips"><span>input</span><span>state &amp; permissions</span><span>dependency failures</span><span>concurrency</span><span>data integrity</span><span>time &amp; locale</span><span>security</span><span>UX &amp; a11y</span><span>happy path</span></div>
+          <ul class="list">
+            <li>Ưu tiên: <span class="tag">P0</span> hỏng là chặn người dùng, mất dữ liệu hoặc lỗ hổng bảo mật · <span class="tag">P1</span> chức năng chính · <span class="tag">P2</span> biên, lỗi nhỏ · <span class="tag">P3</span> thẩm mỹ, hiếm gặp.</li>
+            <li>Có <b>gap case</b> cho những guard còn <i>thiếu</i> trong code, và số case không-happy-path phải ≥ số case happy-path.</li>
+          </ul>
+          <div class="code" style="margin-top:var(--space-4)"><pre>- [ ] TC-012 | P1 | unit | equivalence+boundary
+  - Target: src/utils/price.ts → formatPrice
+  - Evidence: src/utils/price.ts:23-31 (branch `if (amount &lt; 0)` at L25)
+  - Data: amount = -1
+  - Expected: throw RangeError (source: code L25-26)
+  - Test file: src/utils/__tests__/price.test.ts
+  - Status: TODO</pre></div>
+        </div></li>
+
+        <li><div class="tl__n">5</div><div>
+          <h3>Evidence gate</h3>
+          <p>Trước khi viết bất kỳ test nào, skill Grep xác nhận bằng chứng của từng case còn tồn tại đúng chỗ.</p>
+          <ul class="list">
+            <li>Không xác nhận được: xóa khỏi todo và ghi vào mục <b>Dropped</b> kèm lý do.</li>
+            <li>Kỳ vọng không có nguồn: đánh dấu <code>NEEDS-CONFIRM</code>.</li>
+            <li>Test sẵn có đã assert đúng nhánh đó: loại case với lý do “Already covered”.</li>
+          </ul>
+        </div></li>
+
+        <li><div class="tl__n">6</div><div>
+          <h3>Viết test</h3>
+          <p>Theo đúng layout, tên file và thư viện mock của project; chỉ dùng layout mặc định khi project chưa có. Tên test chứa <code>[TC-xxx]</code> để ánh xạ ngược kết quả. File sinh ra có header và được ghi vào <code>manifest.json</code>. Sau khi viết, case chuyển sang <code>WRITTEN</code>.</p>
+          <ul class="list">
+            <li>Frontend với Playwright (nếu bạn đồng ý): khảo sát DOM thật bằng <code>ui-check.mjs</code>, dùng locator theo role, tự xử lý đăng nhập và nhiều viewport.</li>
+          </ul>
+        </div></li>
+
+        <li id="verify"><div class="tl__n">7</div><div>
+          <h3>Chạy và xác minh</h3>
+          <ul class="list" style="margin-top:0">
+            <li><b>Chỉ chạy file test mới sinh</b> bằng runner của project, bật JSON reporter (Vitest, Jest, Playwright, pytest, go test, dotnet test, maven). Log thô lưu ở <code>.qa-agent/logs/&lt;run-id&gt;/</code>.</li>
+            <li><b>Ánh xạ</b> kết quả về TC bằng <code>[TC-xxx]</code>. Test không xuất hiện trong kết quả là <code>BLOCKED</code> (“did not run”), không phải PASS.</li>
+            <li><b>Đối chiếu số liệu:</b> số TC <code>PASS</code> trong todo phải bằng số test pass có ID tương ứng. Lệch thì dừng lại tìm nguyên nhân.</li>
+            <li><b>Hồi quy:</b> chạy test sẵn có liên quan tới file đổi (<code>full</code> chạy cả suite), báo riêng.</li>
+            <li><b>Test phải biết fail:</b> với mỗi case P0 đã pass, skill tạo bản sao tạm (git worktree), đảo điều kiện hoặc bỏ guard rồi chạy lại. Test vẫn pass nghĩa là vô dụng và phải viết lại assertion. Không bao giờ làm trên source thật.</li>
+            <li><b>Coverage:</b> đọc các dòng/nhánh còn hở; thêm case chỉ khi qua evidence gate, tối đa một vòng. Chỉ báo coverage khi runner thật sự in ra.</li>
+          </ul>
+          <p style="margin-top:var(--space-5);font-weight:600;color:var(--label-primary)">Phân loại khi test fail</p>
+          <div class="tbl" style="margin-top:var(--space-2)"><table style="min-width:560px">
+            <thead><tr><th>Loại</th><th>Ý nghĩa</th><th>Xử lý</th></tr></thead>
+            <tbody>
+              <tr><td><code>FAIL-TEST</code></td><td>Test sai (import, selector, mock, setup)</td><td>Sửa tối đa 2 lần, ghi lý do. Vẫn fail thì <code>BLOCKED</code>.</td></tr>
+              <tr><td><code>FAIL-PRODUCT</code></td><td>Code sai so với kỳ vọng có nguồn</td><td>Giữ test, không sửa source, viết bug report (bước tái hiện, expected, actual, <code>path:line</code>). Hỏi bạn có muốn đánh dấu <code>test.fails</code> để CI không vỡ.</td></tr>
+              <tr><td>Environment</td><td>Thiếu env, server không lên</td><td><code>BLOCKED</code> ngay, không retry.</td></tr>
+              <tr><td><code>FLAKY</code></td><td>Kết quả không ổn định</td><td>Chạy lại tối đa 3 lần. Không nhất quán thì <code>FLAKY</code>, không tính là PASS.</td></tr>
+            </tbody>
+          </table></div>
+        </div></li>
+
+        <li><div class="tl__n">8</div><div>
+          <h3>Báo cáo và tự kiểm</h3>
+          <p>Skill ghi <code>.qa-agent/reports/&lt;run-id&gt;.md</code> gồm:</p>
+          <ul class="list">
+            <li>chế độ, commit, phạm vi (file scan / đọc mới / lấy từ cache)</li>
+            <li>bảng đếm theo trạng thái và độ ưu tiên, ma trận phủ, <b>rủi ro chưa được phủ</b></li>
+            <li>bug <code>FAIL-PRODUCT</code>, các case <code>BLOCKED</code>/<code>FLAKY</code>/<code>NEEDS-CONFIRM</code>, case bị loại, hồi quy</li>
+            <li>file đã tạo/sửa và lệnh chạy lại toàn bộ test sinh ra</li>
+          </ul>
+          <div class="gate">Tin nhắn cuối cho bạn tối đa 10 dòng: số pass/fail/blocked, bug đáng chú ý, câu hỏi cần trả lời, đường dẫn báo cáo. Sau đó cập nhật <code>lastRunCommit</code>.</div>
+        </div></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Lifecycle -->
+  <section>
+    <div class="wrap">
+      <div class="sec-head center">
+        <p class="eyebrow">Vòng đời case</p>
+        <h2 class="h2">Các trạng thái của một test case</h2>
+      </div>
+      <div class="life" aria-label="Lifecycle">
+        <span>TODO</span><span>→</span><span>WRITTEN</span><span>→</span>
+        <span class="ok">PASS</span><span class="bad">FAIL-PRODUCT</span><span>FAIL-TEST</span><span class="warn">FLAKY</span><span>BLOCKED</span><span class="warn">NEEDS-CONFIRM</span>
+      </div>
+      <div class="grid grid--2" style="margin-top:var(--space-10)">
+        <article class="card"><h3>Hai chế độ đặc biệt: repro và audit</h3><p><b><code>repro</code></b>: chỉ một test fail để tái hiện bug bạn báo, ở tầng rẻ nhất mà vẫn tái hiện được, không sửa source trừ khi bạn yêu cầu. <b><code>audit</code></b>: thay các bước 3 đến 7 bằng truy vết source→sink qua 13 nhóm lỗ hổng, xếp Critical đến Info kèm độ tin cậy, che secret, không sửa hay tấn công gì.</p></article>
+        <article class="card"><h3>Thư mục làm việc</h3><p style="margin-bottom:var(--space-2)">Tất cả nằm trong <code>.qa-agent/</code> (luôn gitignore):</p>
+<div class="code" style="margin:0"><pre style="padding-right:var(--space-4)">config.json  manifest.json
+bin/        scan.mjs · ui-check.mjs
+cache/      source-tree.json · summaries/
+todo/       &lt;run-id&gt;.md
+reports/    &lt;run-id&gt;.md
+logs/       &lt;run-id&gt;/</pre></div></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Safety -->
+  <section id="safety" style="background: var(--bg-secondary)">
+    <div class="wrap">
+      <div class="sec-head center">
+        <p class="eyebrow">An toàn và giới hạn</p>
+        <h2 class="h2">Khi nào skill dừng lại</h2>
+        <p class="lead">Skill không giới hạn số case. Nó chia todo thành các batch (theo feature hoặc file, ưu tiên P0) rồi lặp lại các bước thiết kế, viết, chạy và ghi nhận cho tới khi mọi case có trạng thái cuối. Trạng thái nằm trong todo nên một lần chạy bị gián đoạn vẫn có thể tiếp tục. Các giới hạn bên dưới giúp tránh vòng lặp không kết thúc.</p>
+      </div>
+      <div class="grid grid--2">
+        <article class="card"><h3>Giới hạn (cho mỗi lần chạy)</h3>
+          <ul class="list" style="padding-left:var(--space-5)">
+            <li>Tối đa 8 lần gọi runner mỗi batch.</li>
+            <li>Cùng một lỗi sau hai lần sửa liên tiếp: <code>BLOCKED</code>, không thử lần ba.</li>
+            <li>Số PASS không tăng sau 2 vòng sửa: phần còn lại của batch là <code>BLOCKED</code>, chuyển batch kế.</li>
+            <li>Lỗi môi trường: <code>BLOCKED</code> ngay.</li>
+            <li>Kiểm tra mutation: một lần mỗi case.</li>
+            <li>Cứ 3 batch (hoặc khoảng 60 case), skill gửi bạn một dòng tiến độ rồi tiếp tục trừ khi bạn bảo dừng.</li>
+          </ul></article>
+        <article class="card"><h3>STOP-AND-REPORT</h3>
+          <p style="margin-bottom:var(--space-2)">Gặp bất kỳ điều nào sau đây, skill dừng hẳn, đặt vấn đề lên đầu báo cáo và báo bạn tối đa 5 dòng:</p>
+          <ul class="list" style="padding-left:var(--space-5)">
+            <li>Nghi mất dữ liệu, hoặc lỗ hổng bảo mật Critical/High</li>
+            <li>Thấy secret thật trong source (được che)</li>
+            <li>Muốn tiếp tục phải sửa source hoặc config chung</li>
+            <li>Test sẽ chạm host không phải local hoặc môi trường thật</li>
+            <li>Cần lệnh phá hủy (drop DB, migration thật, xóa file)</li>
+            <li>Worktree có thay đổi không liên quan có thể bị ghi đè</li>
+          </ul></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="center">
+    <div class="wrap">
+      <h2 class="h2">Bắt đầu sử dụng</h2>
+      <div class="cta" style="margin-top:var(--space-6);display:flex;gap:var(--space-3);justify-content:center;flex-wrap:wrap">
+        <a class="btn btn--filled" href="index.html#install">Cài đặt</a>
+        <a class="btn btn--plain" href="skill.html">Đọc SKILL.md ›</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><a href="index.html">Home</a><a href="https://github.com/maitrithanh/qa-test-agent-skill">GitHub <span class="stars" hidden>★ <span data-stars></span></span></a><a href="https://github.com/maitrithanh/qa-test-agent-skill/blob/main/LICENSE">MIT License</a></p>
+  </div>
+</footer>
+<script>
+window.PAGE = {
+EN: {
+"Tính năng": "Features",
+"Bắt đầu": "Get started",
+"Cài đặt": "Install",
+"Cách dùng": "Usage",
+"Chế độ": "Modes",
+"Tài liệu": "Docs",
+"Cách hoạt động": "How it works",
+"Chi tiết flow": "Full flow",
+"Trang chủ": "Home",
+"Từng bước": "Steps",
+"Xác minh": "Verify",
+"An toàn": "Safety",
+ "Cách hoạt động": "How it works",
+ "Skill làm việc<br><span>như thế nào.</span>": "How the skill<br><span>does its work.</span>",
+ "Skill chạy theo một quy trình cố định gồm 8 giai đoạn. Mỗi giai đoạn có điều kiện kiểm tra riêng, và trạng thái của mọi test case đều được ghi trong một file todo duy nhất.": "The skill follows a fixed pipeline of 8 stages. Each stage has its own check, and the status of every test case is recorded in a single todo file.",
+ "<b>Scan</b>Hash source tree, chỉ đọc lại file đã đổi": "<b>Scan</b>Hash the source tree, re-read only changed files",
+ "<b>Phạm vi</b>Chọn file theo chế độ và git diff": "<b>Scope</b>Pick files by mode and git diff",
+ "<b>Thiết kế</b>Checklist 9 nhóm, ghi vào todo": "<b>Design</b>9-group checklist, written to the todo",
+ "<b>Evidence gate</b>Grep từng path:line, case không có bằng chứng bị xóa": "<b>Evidence gate</b>Grep every path:line; unproven cases are dropped",
+ "<b>Viết test</b>Theo convention của project": "<b>Write</b>Follow the project’s conventions",
+ "<b>Chạy</b>Runner thật, output JSON": "<b>Run</b>Real runner, JSON output",
+ "<b>Xác minh</b>Ánh xạ TC-xxx, đối chiếu số liệu, thử phá test": "<b>Verify</b>Map TC-xxx, reconcile counts, break the test on purpose",
+ "<b>Báo cáo</b>Số liệu, bug, rủi ro chưa phủ": "<b>Report</b>Counts, bugs, uncovered risks",
+ "Nguyên tắc bắt buộc": "Mandatory rules",
+ "Sáu nguyên tắc skill luôn tuân thủ": "Six rules the skill always follows",
+ "Mọi bước bên dưới đều phải tuân theo các nguyên tắc này.": "Every step below has to follow these rules.",
+ "Không tự bịa test case": "No made-up test cases",
+ "Mỗi case cần bằng chứng dạng <code>path:line</code> (hàm, nhánh <code>if</code>, prop, route, selector, endpoint). Trước khi viết test phải Grep xác nhận. Không có bằng chứng thì xóa case.": "Every case needs evidence as <code>path:line</code> (function, <code>if</code> branch, prop, route, selector, endpoint). Grep confirms it before any test is written. No evidence, delete the case.",
+ "Không tự cho pass": "No self-declared passes",
+ "<code>PASS</code> chỉ được ghi sau khi runner thật chạy và JSON report xác nhận đúng test mang ID đó đã pass. Không suy đoán.": "<code>PASS</code> is recorded only after a real runner ran and its JSON report confirms the test with that ID passed. No inference.",
+ "Không làm test pass giả": "No fake passes to go green",
+ "Cấm sửa source cho test qua, nới assertion, đổi expected cho khớp actual, <code>.skip</code>/<code>.only</code>, tăng timeout tùy tiện, <code>waitForTimeout</code>, nuốt lỗi, update snapshot mù.": "Forbidden: editing source to pass, loosening assertions, changing expected to match actual, <code>.skip</code>/<code>.only</code>, arbitrary timeouts, <code>waitForTimeout</code>, swallowed errors, blind snapshot updates.",
+ "Todo là nguồn dữ liệu chính": "The todo is the source of truth",
+ "Mọi case đi qua file todo. Số liệu trong báo cáo phải khớp todo và log của runner.": "Every case goes through the todo file. Report numbers must match the todo and the runner log.",
+ "Kỳ vọng phải có nguồn": "Expectations need a source",
+ "Thứ tự: người dùng → PR/issue/commit → spec/OpenAPI/types/docs → test sẵn có → chính code (chỉ khi hành vi rõ ràng là chủ ý). Code trông sai thì không viết test khẳng định sai mà đánh dấu <code>NEEDS-CONFIRM</code>.": "Order: the user → PR/issue/commit → spec/OpenAPI/types/docs → existing tests → the code itself (only when clearly intentional). If code looks wrong, no test asserts it; the case is marked <code>NEEDS-CONFIRM</code>.",
+ "Không động vào secret": "Secrets are off limits",
+ "Không đọc, scan hay Grep <code>.env*</code>, <code>*.pem</code>, <code>*.key</code>, <code>credentials.json</code>… Không in giá trị biến môi trường ra log hay báo cáo. Cần biến thì hỏi tên, hoặc đọc <code>.env.example</code>.": "Never read, scan or Grep <code>.env*</code>, <code>*.pem</code>, <code>*.key</code>, <code>credentials.json</code>… Never print environment values into logs or reports. Need a variable? Ask for its name, or read <code>.env.example</code>.",
+ "Từng bước": "Step by step",
+ "Khi bạn chạy <code>/qa-test-agent</code>, skill làm gì?": "What the skill does when you run <code>/qa-test-agent</code>",
+ "Khởi tạo lần đầu": "First-run setup",
+ "Chưa có <code>.qa-agent/config.json</code> thì skill hỏi hai câu rồi lưu lại, lần sau không hỏi nữa.": "With no <code>.qa-agent/config.json</code> yet, the skill asks two questions and saves the answers, so it never asks again.",
+ "<b>Q1 Git:</b> commit test sinh ra vào repo hay giữ cục bộ. Skill ghi một khối <code>.gitignore</code> theo lựa chọn, không bao giờ ghi trùng.": "<b>Q1 Git:</b> commit the generated tests or keep them local. The skill writes a matching <code>.gitignore</code> block, never duplicated.",
+ "<b>Q2 Playwright:</b> có / không / hỏi mỗi lần, áp dụng cho frontend. Chế độ <code>audit</code> không bao giờ hỏi Q2.": "<b>Q2 Playwright:</b> yes / no / ask each run, for frontend work. <code>audit</code> mode never asks Q2.",
+ "Nếu todo lần trước còn case <code>TODO</code>/<code>WRITTEN</code>, skill hỏi bạn muốn <b>tiếp tục</b> hay <b>làm lại</b>.": "If the previous todo still has <code>TODO</code>/<code>WRITTEN</code> cases, it asks whether to <b>continue</b> or <b>start over</b>.",
+ "Nhận diện project": "Detect the project",
+ "Chỉ đọc các file cấu hình có thật (<code>package.json</code>, lockfile, <code>tsconfig</code>, config của vitest/jest/playwright, <code>pyproject.toml</code>, <code>go.mod</code>…) và ghi vào <code>config.project</code>.": "Reads only config files that exist (<code>package.json</code>, lockfile, <code>tsconfig</code>, vitest/jest/playwright config, <code>pyproject.toml</code>, <code>go.mod</code>…) and records the result in <code>config.project</code>.",
+ "Thiếu test runner thì skill gợi ý một cái phù hợp (Vitest cho Vite/Vue, Jest hoặc Vitest cho React) và <b>hỏi trước khi cài</b>.": "No test runner? It suggests a fitting one (Vitest for Vite/Vue, Jest or Vitest for React) and <b>asks before installing</b>.",
+ "Scan và cache source tree": "Scan and cache the source tree",
+ "<code>node .qa-agent/bin/scan.mjs</code> băm từng file và so với lần chạy trước. File không đổi dùng lại summary JSON đã lưu, nên không bị đọc lại.": "<code>node .qa-agent/bin/scan.mjs</code> hashes every file and compares with the last run. Unchanged files reuse their stored JSON summary and are never re-read.",
+ "Cache nằm ở <code>.qa-agent/cache/source-tree.json</code> (path → hash) và <code>cache/summaries/*.json</code>.": "The cache lives in <code>.qa-agent/cache/source-tree.json</code> (path → hash) and <code>cache/summaries/*.json</code>.",
+ "Skill dựa vào <code>staleSummary</code>, không dựa vào <code>changed</code>. Scan cũng báo file bị ảnh hưởng (<code>impacted</code>) và test liên quan (<code>impactedTests</code>).": "It relies on <code>staleSummary</code>, not <code>changed</code>. The scan also reports <code>impacted</code> files and <code>impactedTests</code>.",
+ "Xác định phạm vi": "Determine the scope",
+ "Phạm vi": "Scope",
+ "Hợp của: <code>git diff</code> từ <code>lastRunCommit</code>, thay đổi chưa stage, đã stage, file untracked. Bỏ file test.": "Union of: <code>git diff</code> since <code>lastRunCommit</code>, unstaged, staged and untracked files. Test files excluded.",
+ "Cả project, ưu tiên route/page, service/API, store, util có rẽ nhánh. Bỏ file thuần hiển thị.": "Whole project, prioritising routes/pages, services/API, stores, utils with branching. Purely presentational files skipped.",
+ "Toàn bộ file nguồn.": "Every source file.",
+ "File <b>bị ảnh hưởng</b> chỉ chạy test sẵn có để hồi quy (<code>vitest related</code>, <code>jest --findRelatedTests</code>), không sinh case mới.": "<b>Impacted</b> files only run existing tests for regression (<code>vitest related</code>, <code>jest --findRelatedTests</code>); they get no new cases.",
+ "Skill đọc ý định thay đổi một lần (<code>git log --format=%B</code>, mô tả PR nếu có <code>gh</code>). Đây là nguồn kỳ vọng.": "It reads the intent of the change once (<code>git log --format=%B</code>, the PR description if <code>gh</code> exists). This is the source of expectations.",
+ "Phạm vi rỗng thì báo “không có code mới” và dừng.": "Empty scope: report “no new code” and stop.",
+ "Thiết kế test case": "Design the test cases",
+ "Với mỗi file trong phạm vi, skill áp dụng các kỹ thuật phù hợp và ghi kỹ thuật vào từng case.": "For each file in scope, the skill applies the fitting techniques and records the technique in every case.",
+ "Mỗi unit đi qua <b>9 nhóm</b>. Nhóm nào cũng ra ít nhất 1 case, hoặc ghi <code>N/A (lý do)</code> vào ma trận phủ.": "Each unit is walked through <b>9 groups</b>. Every group yields at least one case, or <code>N/A (reason)</code> in the coverage matrix.",
+ "input": "input",
+ "Ưu tiên: <span class=\"tag\">P0</span> hỏng là chặn người dùng, mất dữ liệu hoặc lỗ hổng bảo mật · <span class=\"tag\">P1</span> chức năng chính · <span class=\"tag\">P2</span> biên, lỗi nhỏ · <span class=\"tag\">P3</span> thẩm mỹ, hiếm gặp.": "Priority: <span class=\"tag\">P0</span> breaks users, loses data or is a security hole · <span class=\"tag\">P1</span> main functionality · <span class=\"tag\">P2</span> edges, minor errors · <span class=\"tag\">P3</span> cosmetic, rare.",
+ "Có <b>gap case</b> cho những guard còn <i>thiếu</i> trong code, và số case không-happy-path phải ≥ số case happy-path.": "<b>Gap cases</b> cover guards that are <i>missing</i> in the code, and non-happy cases must be at least as many as happy ones.",
+ "Trước khi viết bất kỳ test nào, skill Grep xác nhận bằng chứng của từng case còn tồn tại đúng chỗ.": "Before any test is written, the skill Greps to confirm each case’s evidence still exists at that spot.",
+ "Không xác nhận được: xóa khỏi todo và ghi vào mục <b>Dropped</b> kèm lý do.": "Cannot confirm: removed from the todo and listed under <b>Dropped</b> with the reason.",
+ "Kỳ vọng không có nguồn: đánh dấu <code>NEEDS-CONFIRM</code>.": "Expectation without a source: marked <code>NEEDS-CONFIRM</code>.",
+ "Test sẵn có đã assert đúng nhánh đó: loại case với lý do “Already covered”.": "An existing test already asserts that branch: dropped as “Already covered”.",
+ "Viết test": "Write the tests",
+ "Theo đúng layout, tên file và thư viện mock của project; chỉ dùng layout mặc định khi project chưa có. Tên test chứa <code>[TC-xxx]</code> để ánh xạ ngược kết quả. File sinh ra có header và được ghi vào <code>manifest.json</code>. Sau khi viết, case chuyển sang <code>WRITTEN</code>.": "Follows the project’s own layout, naming and mock libraries; the default layout is used only when none exists. Test names contain <code>[TC-xxx]</code> so results map back. Generated files carry a header and are listed in <code>manifest.json</code>. Written cases become <code>WRITTEN</code>.",
+ "Frontend với Playwright (nếu bạn đồng ý): khảo sát DOM thật bằng <code>ui-check.mjs</code>, dùng locator theo role, tự xử lý đăng nhập và nhiều viewport.": "Frontend with Playwright (if you agreed): survey the real DOM with <code>ui-check.mjs</code>, use role-based locators, handle auth and multiple viewports.",
+ "Chạy và xác minh": "Run and verify",
+ "<b>Chỉ chạy file test mới sinh</b> bằng runner của project, bật JSON reporter (Vitest, Jest, Playwright, pytest, go test, dotnet test, maven). Log thô lưu ở <code>.qa-agent/logs/&lt;run-id&gt;/</code>.": "<b>Run only the newly generated files</b> with the project’s runner and a JSON reporter (Vitest, Jest, Playwright, pytest, go test, dotnet test, maven). Raw logs go to <code>.qa-agent/logs/&lt;run-id&gt;/</code>.",
+ "<b>Ánh xạ</b> kết quả về TC bằng <code>[TC-xxx]</code>. Test không xuất hiện trong kết quả là <code>BLOCKED</code> (“did not run”), không phải PASS.": "<b>Map</b> results to TCs by <code>[TC-xxx]</code>. A test missing from the results is <code>BLOCKED</code> (“did not run”), never PASS.",
+ "<b>Đối chiếu số liệu:</b> số TC <code>PASS</code> trong todo phải bằng số test pass có ID tương ứng. Lệch thì dừng lại tìm nguyên nhân.": "<b>Reconcile counts:</b> the number of <code>PASS</code> TCs in the todo must equal the passed tests with matching IDs. A mismatch stops the run until explained.",
+ "<b>Hồi quy:</b> chạy test sẵn có liên quan tới file đổi (<code>full</code> chạy cả suite), báo riêng.": "<b>Regression:</b> run existing tests related to changed files (<code>full</code> runs the whole suite), reported separately.",
+ "<b>Test phải biết fail:</b> với mỗi case P0 đã pass, skill tạo bản sao tạm (git worktree), đảo điều kiện hoặc bỏ guard rồi chạy lại. Test vẫn pass nghĩa là vô dụng và phải viết lại assertion. Không bao giờ làm trên source thật.": "<b>Tests must be able to fail:</b> for each passed P0 case the skill makes a temporary copy (git worktree), inverts the condition or removes the guard, and reruns. If the test still passes it is useless and its assertion is rewritten. Never done on real source.",
+ "<b>Coverage:</b> đọc các dòng/nhánh còn hở; thêm case chỉ khi qua evidence gate, tối đa một vòng. Chỉ báo coverage khi runner thật sự in ra.": "<b>Coverage:</b> read the uncovered lines/branches; add cases only if they pass the evidence gate, at most one round. Coverage is reported only when the runner prints it.",
+ "Phân loại khi test fail": "Classifying a failure",
+ "Loại": "Kind",
+ "Ý nghĩa": "Meaning",
+ "Xử lý": "Action",
+ "Test sai (import, selector, mock, setup)": "The test is wrong (import, selector, mock, setup)",
+ "Sửa tối đa 2 lần, ghi lý do. Vẫn fail thì <code>BLOCKED</code>.": "Fix at most 2 times, noting why. Still failing: <code>BLOCKED</code>.",
+ "Code sai so với kỳ vọng có nguồn": "Code is wrong versus a sourced expectation",
+ "Giữ test, không sửa source, viết bug report (bước tái hiện, expected, actual, <code>path:line</code>). Hỏi bạn có muốn đánh dấu <code>test.fails</code> để CI không vỡ.": "Keep the test, leave source alone, write a bug report (repro, expected, actual, <code>path:line</code>). Asks whether to mark it <code>test.fails</code> so CI stays green.",
+ "Thiếu env, server không lên": "Missing env, server will not start",
+ "<code>BLOCKED</code> ngay, không retry.": "<code>BLOCKED</code> at once, no retry.",
+ "Kết quả không ổn định": "Unstable results",
+ "Chạy lại tối đa 3 lần. Không nhất quán thì <code>FLAKY</code>, không tính là PASS.": "Rerun up to 3 times. Inconsistent: <code>FLAKY</code>, not counted as PASS.",
+ "Báo cáo và tự kiểm": "Report and self-check",
+ "Skill ghi <code>.qa-agent/reports/&lt;run-id&gt;.md</code> gồm:": "The skill writes <code>.qa-agent/reports/&lt;run-id&gt;.md</code> containing:",
+ "chế độ, commit, phạm vi (file scan / đọc mới / lấy từ cache)": "mode, commit, scope (files scanned / newly read / served from cache)",
+ "bảng đếm theo trạng thái và độ ưu tiên, ma trận phủ, <b>rủi ro chưa được phủ</b>": "counts by status and priority, coverage matrix, <b>uncovered risks</b>",
+ "bug <code>FAIL-PRODUCT</code>, các case <code>BLOCKED</code>/<code>FLAKY</code>/<code>NEEDS-CONFIRM</code>, case bị loại, hồi quy": "<code>FAIL-PRODUCT</code> bugs, <code>BLOCKED</code>/<code>FLAKY</code>/<code>NEEDS-CONFIRM</code> cases, dropped cases, regression",
+ "file đã tạo/sửa và lệnh chạy lại toàn bộ test sinh ra": "files created/edited and the command to rerun every generated test",
+ "Tin nhắn cuối cho bạn tối đa 10 dòng: số pass/fail/blocked, bug đáng chú ý, câu hỏi cần trả lời, đường dẫn báo cáo. Sau đó cập nhật <code>lastRunCommit</code>.": "The final message to you is at most 10 lines: pass/fail/blocked counts, notable bugs, open questions, report path. Then <code>lastRunCommit</code> is updated.",
+ "Vòng đời case": "Case lifecycle",
+ "Các trạng thái của một test case": "The statuses of a test case",
+ "Hai chế độ đặc biệt: repro và audit": "Two special modes: repro and audit",
+ "<b><code>repro</code></b>: chỉ một test fail để tái hiện bug bạn báo, ở tầng rẻ nhất mà vẫn tái hiện được, không sửa source trừ khi bạn yêu cầu. <b><code>audit</code></b>: thay các bước 3 đến 7 bằng truy vết source→sink qua 13 nhóm lỗ hổng, xếp Critical đến Info kèm độ tin cậy, che secret, không sửa hay tấn công gì.": "<b><code>repro</code></b>: a single failing test that reproduces the bug you report, at the cheapest layer that works, with no fix unless you ask. <b><code>audit</code></b>: replaces steps 3 to 7 with source→sink tracing across 13 vulnerability groups, ranked Critical to Info with confidence, secrets masked, nothing edited or attacked.",
+ "Thư mục làm việc": "Working folder",
+ "Tất cả nằm trong <code>.qa-agent/</code> (luôn gitignore):": "Everything lives in <code>.qa-agent/</code> (always gitignored):",
+ "An toàn và giới hạn": "Safety and limits",
+ "Khi nào skill dừng lại": "When the skill stops",
+ "Skill không giới hạn số case. Nó chia todo thành các batch (theo feature hoặc file, ưu tiên P0) rồi lặp lại các bước thiết kế, viết, chạy và ghi nhận cho tới khi mọi case có trạng thái cuối. Trạng thái nằm trong todo nên một lần chạy bị gián đoạn vẫn có thể tiếp tục. Các giới hạn bên dưới giúp tránh vòng lặp không kết thúc.": "The skill does not cap the number of cases. It splits the todo into batches (by feature or file, P0 first) and repeats design, write, run and record until every case has a final status. The state lives in the todo, so an interrupted run can be resumed. The limits below prevent endless loops.",
+ "Giới hạn (cho mỗi lần chạy)": "Limits (per run)",
+ "Tối đa 8 lần gọi runner mỗi batch.": "At most 8 runner invocations per batch.",
+ "Cùng một lỗi sau hai lần sửa liên tiếp: <code>BLOCKED</code>, không thử lần ba.": "The same error after two consecutive fixes: <code>BLOCKED</code>, no third try.",
+ "Số PASS không tăng sau 2 vòng sửa: phần còn lại của batch là <code>BLOCKED</code>, chuyển batch kế.": "PASS count flat after 2 fix rounds: the rest of the batch is <code>BLOCKED</code>, on to the next batch.",
+ "Lỗi môi trường: <code>BLOCKED</code> ngay.": "Environment failure: <code>BLOCKED</code> immediately.",
+ "Kiểm tra mutation: một lần mỗi case.": "Mutation check: once per case.",
+ "Cứ 3 batch (hoặc khoảng 60 case), skill gửi bạn một dòng tiến độ rồi tiếp tục trừ khi bạn bảo dừng.": "Every 3 batches (or ~60 cases) it sends you one progress line and continues unless you say stop.",
+ "Gặp bất kỳ điều nào sau đây, skill dừng hẳn, đặt vấn đề lên đầu báo cáo và báo bạn tối đa 5 dòng:": "On any of these, the skill stops entirely, puts the issue at the top of the report, and tells you in at most 5 lines:",
+ "Nghi mất dữ liệu, hoặc lỗ hổng bảo mật Critical/High": "Suspected data loss, or a Critical/High security flaw",
+ "Thấy secret thật trong source (được che)": "A real secret found in source (masked)",
+ "Muốn tiếp tục phải sửa source hoặc config chung": "Continuing would need editing source or shared config",
+ "Test sẽ chạm host không phải local hoặc môi trường thật": "A test would touch a non-local host or real environment",
+ "Cần lệnh phá hủy (drop DB, migration thật, xóa file)": "A destructive command would be needed (drop DB, real migration, delete files)",
+ "Worktree có thay đổi không liên quan có thể bị ghi đè": "The worktree has unrelated changes that could be overwritten",
+ "Bắt đầu sử dụng": "Get started",
+ "Cài đặt": "Install",
+ "Đọc SKILL.md ›": "Read SKILL.md ›"
+},
+FRAG: {},
+META: { vi: ["Cách hoạt động — qa-test-agent", "Mô tả chi tiết flow của skill qa-test-agent: scan, phạm vi, thiết kế case, evidence gate, chạy, xác minh, báo cáo và các giới hạn an toàn.", 'Chép', 'Đã chép'], en: ["How it works \u2014 qa-test-agent", "The detailed flow of the qa-test-agent skill: scan, scope, case design, evidence gate, run, verify, report and the safety limits.", 'Copy', 'Copied'] }
+};
+</script>
+<script src="site.js"></script>
+</body>
+</html>
