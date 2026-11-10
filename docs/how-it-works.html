@@ -9,22 +9,24 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="site.css">
 </head>
 <body>
 <nav class="nav" aria-label="Main">
   <div class="wrap">
     <a class="brand" href="index.html">🧪 qa-test-agent</a>
-    <ul>
-      <li><a href="index.html">Trang chủ</a></li>
-      <li><a href="#flow">Flow</a></li>
-      <li><a href="#steps">Từng bước</a></li>
-      <li><a href="#verify">Xác minh</a></li>
-      <li><a href="#safety">An toàn</a></li>
+    <ul class="nav__menu" id="menu">
+      <li><a href="index.html#features">Tính năng</a></li>
+      <li class="grp"><button class="grp__b" aria-expanded="false" aria-haspopup="true">Bắt đầu</button>
+        <ul class="grp__m"><li><a href="index.html#install">Cài đặt</a></li><li><a href="index.html#usage">Cách dùng</a></li><li><a href="index.html#modes">Chế độ</a></li></ul></li>
+      <li class="grp"><button class="grp__b" aria-expanded="false" aria-haspopup="true">Tài liệu</button>
+        <ul class="grp__m"><li><a href="index.html#how">Cách hoạt động</a></li><li><a href="how-it-works.html">Chi tiết flow</a></li><li><a href="skill.html">SKILL.md</a></li><li><a href="index.html#faq">FAQ</a></li></ul></li>
     </ul>
     <div class="nav__r">
       <div class="seg seg--mini" role="group" aria-label="Language"><button data-lang="vi" aria-pressed="false">VI</button><button data-lang="en" aria-pressed="false">EN</button></div>
       <a class="gh" href="https://github.com/maitrithanh/qa-test-agent-skill" target="_blank" rel="noopener" aria-label="GitHub repository"><span class="gh__l"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span class="gh__t">GitHub</span></span><span class="gh__r stars" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg><span data-stars></span></span></a>
+      <button class="nav__burger" aria-controls="menu" aria-expanded="false" aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="b1" d="M4 8h16"/><path class="b2" d="M4 16h16"/></svg></button>
     </div>
   </div>
 </nav>
@@ -272,6 +274,14 @@ logs/       &lt;run-id&gt;/</pre></div></article>
 <script>
 window.PAGE = {
 EN: {
+"Tính năng": "Features",
+"Bắt đầu": "Get started",
+"Cài đặt": "Install",
+"Cách dùng": "Usage",
+"Chế độ": "Modes",
+"Tài liệu": "Docs",
+"Cách hoạt động": "How it works",
+"Chi tiết flow": "Full flow",
 "Trang chủ": "Home",
 "Từng bước": "Steps",
 "Xác minh": "Verify",
@@ -317,7 +327,6 @@ EN: {
  "Cache nằm ở <code>.qa-agent/cache/source-tree.json</code> (path → hash) và <code>cache/summaries/*.json</code>.": "The cache lives in <code>.qa-agent/cache/source-tree.json</code> (path → hash) and <code>cache/summaries/*.json</code>.",
  "Skill dựa vào <code>staleSummary</code>, không dựa vào <code>changed</code>. Scan cũng báo file bị ảnh hưởng (<code>impacted</code>) và test liên quan (<code>impactedTests</code>).": "It relies on <code>staleSummary</code>, not <code>changed</code>. The scan also reports <code>impacted</code> files and <code>impactedTests</code>.",
  "Xác định phạm vi": "Determine the scope",
- "Chế độ": "Mode",
  "Phạm vi": "Scope",
  "Hợp của: <code>git diff</code> từ <code>lastRunCommit</code>, thay đổi chưa stage, đã stage, file untracked. Bỏ file test.": "Union of: <code>git diff</code> since <code>lastRunCommit</code>, unstaged, staged and untracked files. Test files excluded.",
  "Cả project, ưu tiên route/page, service/API, store, util có rẽ nhánh. Bỏ file thuần hiển thị.": "Whole project, prioritising routes/pages, services/API, stores, utils with branching. Purely presentational files skipped.",

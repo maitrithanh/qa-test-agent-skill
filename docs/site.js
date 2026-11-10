@@ -68,3 +68,26 @@ setLang(saved || ((navigator.language || '').startsWith('vi') ? 'vi' : 'en'));
   }
   document.querySelectorAll('[data-stars]').forEach(e => { e.textContent = n.toLocaleString(); e.parentElement.hidden = false; });
 })();
+
+// Menu: nhóm dropdown (desktop) + hamburger (mobile)
+(() => {
+  const nav = document.querySelector('.nav'), burger = nav.querySelector('.nav__burger');
+  const groups = [...nav.querySelectorAll('.grp__b')];
+  const closeGroups = () => groups.forEach(b => b.setAttribute('aria-expanded', 'false'));
+  const setMenu = on => { nav.classList.toggle('is-open', on); burger.setAttribute('aria-expanded', on); document.body.style.overflow = on ? 'hidden' : ''; };
+  groups.forEach(b => b.addEventListener('click', e => {
+    e.stopPropagation();
+    const open = b.getAttribute('aria-expanded') === 'true';
+    closeGroups(); b.setAttribute('aria-expanded', !open);
+  }));
+  burger.addEventListener('click', () => setMenu(!nav.classList.contains('is-open')));
+  document.addEventListener('click', closeGroups);
+  nav.querySelectorAll('.nav__menu a').forEach(a => a.addEventListener('click', () => { closeGroups(); setMenu(false); }));
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    const open = groups.find(b => b.getAttribute('aria-expanded') === 'true');
+    closeGroups(); if (open) open.focus();
+    if (nav.classList.contains('is-open')) { setMenu(false); burger.focus(); }
+  });
+  matchMedia('(min-width: 900px)').addEventListener('change', e => e.matches && setMenu(false));
+})();
