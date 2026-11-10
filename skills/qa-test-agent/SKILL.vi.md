@@ -49,6 +49,7 @@ Cách gọi: `/qa-test-agent` (mặc định = `default`), `/qa-test-agent lite`
   config.json              # lựa chọn của user + thông tin dự án
   manifest.json            # danh sách file test do skill sinh ra (để quản lý/gitignore/dọn)
   bin/scan.mjs             # script cache source tree (copy từ scripts/scan.mjs của skill)
+  bin/ui-check.mjs         # tool kiểm tra trình duyệt (copy từ scripts/ui-check.mjs, chỉ khi dùng Playwright)
   cache/source-tree.json   # path -> hash
   cache/summaries/*.json   # tóm tắt từng file (đặt tên: path thay / bằng __)
   todo/<run-id>.md         # danh sách test case của lần chạy
@@ -244,7 +245,7 @@ Sau khi viết, cập nhật case sang `WRITTEN`.
 
 1. Kiểm tra `@playwright/test` đã có chưa; thiếu → hỏi rồi mới cài (`<pm> add -D @playwright/test` và `npx playwright install chromium`).
 2. Có `playwright.config.*` sẵn → dùng lại. Chưa có → tạo với: `testDir` trỏ vào `tests/e2e/specs`, `use.baseURL` từ config, `webServer` = startCommand (`reuseExistingServer: true`), `trace: 'on-first-retry'`, `screenshot: 'only-on-failure'`, `outputDir: '.qa-agent/logs/playwright'`, reporter `[['list'], ['json', { outputFile: '.qa-agent/logs/playwright/results.json' }]]`.
-3. **Khảo sát DOM thật trước khi viết spec**: viết script tạm trong `.qa-agent/` mở từng route cần test và in `await page.locator('body').ariaSnapshot()` (Playwright ≥ 1.49; bản cũ dùng `page.accessibility.snapshot()`). Selector trong spec phải xuất hiện trong snapshot hoặc trong source.
+3. **Khảo sát DOM thật trước khi viết spec** bằng tool đi kèm: copy `scripts/ui-check.mjs` vào `.qa-agent/bin/ui-check.mjs`, rồi chạy `node .qa-agent/bin/ui-check.mjs <url...> --viewports desktop,mobile`. Với mỗi trang/viewport, tool ghi aria snapshot (`*.aria.txt`) và ảnh chụp toàn trang vào `.qa-agent/logs/ui-check/`, in JSON gồm: HTTP status, lỗi console/page, request thất bại, cùng các gợi ý (ảnh thiếu alt, control không nhãn, nút không tên, tràn ngang, số `<h1>`). Selector trong spec phải xuất hiện trong aria snapshot hoặc trong source. Kết quả của tool là **gợi ý, không phải kết quả test**: chỉ biến thành case qua cổng bằng chứng (mục 7), và không bao giờ ghi PASS từ tool này. Tool từ chối host không phải local trừ khi có `--allow-remote` cho đích user đã nêu, không tự cài gì (exit 3 = thiếu Playwright/trình duyệt → hỏi user), dùng `--storage <state.json>` cho trang cần đăng nhập, và tự chuyển sang Chrome/Edge đã cài nếu không có Chromium đi kèm.
 4. Ưu tiên locator: `getByRole` > `getByLabel` > `getByPlaceholder` > `getByText` > `getByTestId`. Cấm CSS/XPath theo vị trí (`nth-child`, `div > div`).
 5. Không `waitForTimeout`; dùng auto-wait, `expect(...).toBeVisible()`, `expect.poll`, `waitForResponse`.
 6. Page Object cho mỗi trang; spec chỉ mô tả luồng.
