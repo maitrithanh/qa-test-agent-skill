@@ -1,12 +1,13 @@
 {
   "name": "qa-test-agent-skill",
   "owner": { "name": "maitrithanh" },
+  "description": "Senior QC Automation agent: real tests with evidence, plus a security audit mode.",
   "plugins": [
     {
       "name": "qa-test-agent",
       "source": "./",
       "description": "Senior QC Automation agent: designs, writes and runs real tests; no invented cases, no fake passes.",
-      "version": "1.4.1"
+      "version": "1.4.2"
     }
   ]
 }

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 250" width="900" height="250" role="img" aria-label="qa-test-agent workflow: scan, scope, design cases, evidence gate, write tests, run real runner, report">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6b7280"/></marker>
+  </defs>
+  <rect width="900" height="250" rx="14" fill="#f8fafc" stroke="#e2e8f0"/>
+  <g font-family="system-ui,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle">
+    <g fill="#fff" stroke="#334155" stroke-width="1.5">
+      <rect x="20" y="40" width="108" height="56" rx="10"/>
+      <rect x="148" y="40" width="108" height="56" rx="10"/>
+      <rect x="276" y="40" width="108" height="56" rx="10"/>
+      <rect x="404" y="40" width="108" height="56" rx="10" fill="#fff7ed" stroke="#d97757"/>
+      <rect x="532" y="40" width="108" height="56" rx="10"/>
+      <rect x="660" y="40" width="108" height="56" rx="10" fill="#f0fdf4" stroke="#16a34a"/>
+      <rect x="788" y="40" width="92" height="56" rx="10"/>
+    </g>
+    <g font-size="14" font-weight="600" fill="#0f172a">
+      <text x="74" y="73">scan</text><text x="202" y="73">scope</text><text x="330" y="73">design</text>
+      <text x="458" y="73">evidence gate</text><text x="586" y="73">write tests</text>
+      <text x="714" y="73">real runner</text><text x="834" y="73">report</text>
+    </g>
+    <g stroke="#6b7280" stroke-width="1.5" marker-end="url(#a)">
+      <path d="M128 68H146"/><path d="M256 68H274"/><path d="M384 68H402"/>
+      <path d="M512 68H530"/><path d="M640 68H658"/><path d="M768 68H786"/>
+    </g>
+    <g font-size="12" fill="#475569">
+      <text x="74" y="130">hash cache</text><text x="74" y="146">unchanged = skipped</text>
+      <text x="202" y="130">diff / lite / full</text>
+      <text x="330" y="130">9-group checklist</text><text x="330" y="146">coverage matrix</text>
+      <text x="458" y="130">Grep every path:line</text><text x="458" y="146">no proof = dropped</text>
+      <text x="586" y="130">pilot file first</text><text x="586" y="146">TC-xxx in test name</text>
+      <text x="714" y="130">JSON reporter</text><text x="714" y="146">PASS only if confirmed</text>
+      <text x="834" y="130">counts + bugs</text><text x="834" y="146">+ uncovered risks</text>
+    </g>
+    <text x="450" y="205" font-size="13" fill="#334155">Status: TODO → WRITTEN → PASS | FAIL-PRODUCT | FAIL-TEST | FLAKY | BLOCKED | NEEDS-CONFIRM</text>
+    <text x="450" y="228" font-size="12" fill="#64748b">audit mode: same evidence rule, but source → sink traces and security regression tests</text>
+  </g>
+</svg>

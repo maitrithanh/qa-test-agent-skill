@@ -6,7 +6,7 @@
 Designs, writes and runs *real* tests — no invented cases, no fake passes.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-![Version](https://img.shields.io/badge/version-1.4.1-blue)
+![Version](https://img.shields.io/badge/version-1.4.2-blue)
 ![Claude Code](https://img.shields.io/badge/Claude_Code-✓-d97757)
 ![Codex](https://img.shields.io/badge/Codex-✓-111)
 ![Gemini CLI](https://img.shields.io/badge/Gemini_CLI-✓-4285f4)
@@ -46,7 +46,24 @@ Requires **Node ≥ 18** (for the cache scanner). Pick your agent:
 /plugin install qa-test-agent@qa-test-agent-skill
 ```
 
-Update: `/plugin marketplace update qa-test-agent-skill`
+Update inside a Claude Code session: `/plugin marketplace update qa-test-agent-skill`, then open `/plugin` → *Installed* → *qa-test-agent* → update.
+
+Or from a normal terminal (works anywhere, e.g. the VS Code extension where `/plugin` is unavailable):
+
+```bash
+claude plugin marketplace add maitrithanh/qa-test-agent-skill
+claude plugin install qa-test-agent@qa-test-agent-skill
+```
+
+Update (refresh the marketplace first, then the plugin; restart Claude Code afterwards):
+
+```bash
+claude plugin marketplace update qa-test-agent-skill
+claude plugin update qa-test-agent
+```
+
+> `Plugin "qa-test-agent" is not installed`? Updating a marketplace does not install its plugins — run the `install` command above first.
+
 Invoke: `/qa-test-agent:qa-test-agent` (or `/qa-test-agent` if installed manually)
 
 <details>
@@ -129,6 +146,8 @@ First run asks two things: commit generated tests to git or not, and whether to 
 
 ## ⚙️ How it works
 
+<p align="center"><img src="assets/workflow.svg" alt="qa-test-agent workflow" width="900"></p>
+
 ```text
 scan (hash cache) ─▶ scope ─▶ design cases ─▶ evidence gate ─▶ write tests ─▶ run real runner ─▶ report
                                │  9-group checklist   │ Grep every path:line     │ JSON → map TC-xxx
@@ -170,7 +189,7 @@ It follows your project's convention: Vitest, Jest, Playwright, and others it de
 
 ## 🤝 Contributing
 
-Issues and PRs welcome. Keep `SKILL.md` concise and every rule verifiable. When releasing, bump `version` in `.claude-plugin/*.json`, `.codex-plugin/plugin.json` and `gemini-extension.json`.
+Issues and PRs welcome. Keep `SKILL.md` concise and every rule verifiable. When releasing, bump `version` in `.claude-plugin/*.json`, `.codex-plugin/plugin.json`, `gemini-extension.json` and the version badge in this README, then tag `vX.Y.Z`.
 
 ## 📄 License
 
@@ -188,5 +207,7 @@ Issues and PRs welcome. Keep `SKILL.md` concise and every rule verifiable. When 
 | Gemini CLI | `gemini extensions install https://github.com/maitrithanh/qa-test-agent-skill` |
 | Codex | `codex plugin marketplace add maitrithanh/qa-test-agent-skill`, rồi cài trong Plugins directory |
 | Copilot | copy `skills/qa-test-agent` vào `.github/skills/` hoặc `~/.copilot/skills/` |
+
+Claude Code từ terminal: `claude plugin marketplace add maitrithanh/qa-test-agent-skill` rồi `claude plugin install qa-test-agent@qa-test-agent-skill`. Cập nhật: `claude plugin marketplace update qa-test-agent-skill` rồi `claude plugin update qa-test-agent`.
 
 Dùng: `/qa-test-agent` (mặc định), `/qa-test-agent lite`, `/qa-test-agent full`, `/qa-test-agent audit`.
