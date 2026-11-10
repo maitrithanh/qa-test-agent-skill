@@ -1,6 +1,6 @@
 ---
 name: qa-test-agent
-description: Senior QC Automation agent: designs, writes and runs real tests for a codebase in 3 modes (default/lite/full), plus an audit mode that scans for security vulnerabilities with traced evidence, with a source-tree cache, an evidence-based todo that prevents invented cases, systematic non-happy-path case design, and a Playwright prompt for frontends.
+description: Senior QC Automation agent - designs, writes and runs real evidence-based tests (modes default/lite/full) and audits code for security vulnerabilities (mode audit). Use when the user asks to write or run tests, QA a change or codebase, find bugs, check test coverage, or scan for security issues; also on /qa-test-agent. Vietnamese - viết test, kiểm thử, QC, quét lỗ hổng bảo mật.
 ---
 
 # QA Test Agent
@@ -36,7 +36,7 @@ Talk to the user in **the language they write in**. Generated test code, identif
 | `full` | Whole project, deep read | P0–P3, every technique in section 7 | unit, integration, e2e, a11y, responsive, full regression |
 | `audit` | Whole project or a given path (security only) | Findings by severity (Critical–Info) with confidence | static taint tracing + security regression tests (section 13) |
 
-`audit` follows section 13 instead of sections 3 (Playwright question), 6, 9 and 11.
+`audit` follows section 13 and replaces sections 6–11. It still asks Q1 (Git) in section 3 because it writes security tests; it never asks Q2 (Playwright).
 
 `full` is expensive: after building the todo, show total cases by type/priority and **ask for confirmation** before writing.
 
@@ -164,7 +164,7 @@ For **each** function/component/endpoint in scope, walk through every group belo
 8. **UX & a11y** (frontend): back/refresh mid-flow, lost focus, keyboard, errors shown to the user (not silent), loading/empty/error states all exist.
 9. **Happy path**: the main correct flow.
 
-Balance rule: for P0/P1 units, non-happy cases must be ≥ happy cases. Happy path only = not done.
+In `lite`, only groups 1, 3 and 9 are required; mark the others `N/A (lite)`. Balance rule: for P0/P1 units in `default`/`full`, non-happy cases must be ≥ happy cases. Happy path only = not done.
 
 ### 7.2 "Missing handling" cases (gap cases)
 
@@ -199,7 +199,7 @@ Write to `todo/<run-id>.md` in exactly this format:
 
 Also create a task (TaskCreate or your agent's task list) per large group (by file/feature) so the user can follow progress.
 
-**Pre-write gate** (mandatory): for each case, Grep to confirm the evidence (`path:line`, function name, selector, endpoint) exists at that spot. A case that cannot be confirmed → remove it from the todo and list it under "Dropped" with the reason. A case with an unsourced expectation → `NEEDS-CONFIRM`.
+**Pre-write gate** (mandatory): for each case, Grep to confirm the evidence (`path:line`, function name, selector, endpoint) exists at that spot. A case that cannot be confirmed → remove it from the todo and list it under "Dropped" with the reason. A case with an unsourced expectation → `NEEDS-CONFIRM`. Also check the existing tests listed in the summary's `hasTests`: if one already asserts that branch/behavior, drop the case as "Already covered".
 
 Valid statuses: `TODO` → `WRITTEN` → `PASS` | `FAIL-PRODUCT` | `FAIL-TEST` (being fixed) | `FLAKY` | `BLOCKED` | `NEEDS-CONFIRM`.
 
@@ -228,10 +228,13 @@ tests/
 - One `describe` per unit; Arrange–Act–Assert; each test independent, order-agnostic, reset mocks/stores in `beforeEach`.
 - Deterministic: fake timers for time, seeds for random data, no real network in unit/integration.
 - Specific assertions (value, text, role, call count + arguments); avoid generic `toBeTruthy` and large snapshots.
-- Reuse the project's existing helpers/fixtures/mocks before creating new ones.
+- Reuse the project's existing helpers/fixtures/mocks before creating new ones. Before the first test of a kind, read 1–2 nearby existing tests (via `hasTests`) and copy their style: mocking, helpers, naming, setup.
+- Every test must contain at least one real assertion (`expect`/`assert`).
 - Import using the project's aliases; must type-check (no gratuitous `any` in TypeScript).
 - Missing stable selector → **suggest** adding `data-testid` to the source; do not edit it yourself.
 - In `commitTests: false` mode: only create new files, never touch tracked test files.
+
+**Pilot first:** write and run ONE file per test type (unit/integration/e2e) before writing the rest. Fix shared setup problems (alias, mock, environment) once, then continue.
 
 After writing, update the cases to `WRITTEN`.
 
@@ -267,8 +270,8 @@ If the app cannot start → e2e cases are `BLOCKED` with the log, never marked o
    - **Environment** (missing env, server will not start): `BLOCKED` with the reason.
    - Unstable results: rerun up to 3 times; inconsistent → `FLAKY` (not counted as PASS), note the suspected cause.
 5. Regression: run existing tests related to changed/impacted files (`vitest related <files> --run`, `jest --findRelatedTests <files>`). `full` runs the whole suite. Report regression failures separately.
-6. **Tests must be able to fail** (P0, mandatory in `full`): for each passed P0 case, check that it really catches the bug — in a temporary copy (git worktree / temp dir, **never** the real source) invert the condition / remove the relevant guard and rerun; if the test still passes it is useless → rewrite the assertion.
-7. Report coverage only when the runner actually outputs it; never estimate.
+6. **Tests must be able to fail** (P0, mandatory in `default` and `full`; if the project already has Stryker/mutmut or similar, use it instead): for each passed P0 case, check that it really catches the bug — in a temporary copy (git worktree / temp dir, **never** the real source) invert the condition / remove the relevant guard and rerun; if the test still passes it is useless → rewrite the assertion.
+7. Run the new test files with coverage on (if the runner supports it) and read the lines/branches of the files under test that stay uncovered. Add cases for them only when they pass the pre-write gate (evidence required), at most **one** extra round. Report coverage only when the runner actually outputs it; never estimate.
 
 ---
 
@@ -292,8 +295,8 @@ Final message to the user: short — pass/fail/blocked counts, notable bugs, que
 ## 12. Self-check before finishing
 
 - [ ] Every TC has `path:line` evidence confirmed by Grep
-- [ ] Every P0/P1 unit has a 9-group coverage matrix with no blank cell; non-happy cases ≥ happy
-- [ ] Every PASS matches the runner JSON; no `.skip`/`.only`/`waitForTimeout` in generated files (verify with Grep)
+- [ ] Every P0/P1 unit has a 9-group coverage matrix with no blank cell (`lite`: groups 1, 3, 9; rest `N/A (lite)`); non-happy cases ≥ happy (`default`/`full`)
+- [ ] Every PASS matches the runner JSON; no `.skip`/`.only`/`waitForTimeout` in generated files (verify with Grep); every test has an assertion
 - [ ] No source file was modified beyond the user's intent
 - [ ] Generated files follow the layout, have the header, and are in `manifest.json`
 - [ ] `.gitignore` matches the Q1 choice and the block is not duplicated

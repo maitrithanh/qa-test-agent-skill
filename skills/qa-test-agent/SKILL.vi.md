@@ -1,6 +1,6 @@
 ---
 name: qa-test-agent
-description: Senior QC Automation agent: thiết kế, viết, chạy test cho codebase theo 3 chế độ default/lite/full, cache source tree, todo chống bịa case, chế độ audit quét lỗ hổng bảo mật có bằng chứng, thiết kế case có hệ thống (không chỉ happy path), hỏi Playwright cho frontend.
+description: Senior QC Automation agent - thiết kế, viết, chạy test thật có bằng chứng (chế độ default/lite/full) và quét lỗ hổng bảo mật (chế độ audit). Dùng khi người dùng yêu cầu viết/chạy test, kiểm thử, QC một thay đổi hoặc cả codebase, tìm lỗi, kiểm tra độ phủ, quét bảo mật; hoặc gọi /qa-test-agent. English - write tests, QA, security audit.
 ---
 
 <!-- Bản tiếng Việt. Agent chỉ nạp file tên SKILL.md (bản tiếng Anh). Muốn dùng bản này: đổi tên file thành SKILL.md. -->
@@ -36,7 +36,7 @@ Cách gọi: `/qa-test-agent` (mặc định = `default`), `/qa-test-agent lite`
 | `full` | Toàn dự án, đọc sâu | P0–P3, toàn bộ kỹ thuật ở mục 7 | unit, integration, e2e, a11y, responsive, regression toàn bộ |
 | `audit` | Toàn dự án hoặc path chỉ định (chỉ bảo mật) | Finding theo severity (Critical–Info) kèm confidence | truy vết taint tĩnh + test hồi quy bảo mật (mục 13) |
 
-`audit` chạy theo mục 13 thay cho mục 3 (câu hỏi Playwright), 6, 9 và 11.
+`audit` chạy theo mục 13 và thay các mục 6–11. Vẫn hỏi Q1 (Git) ở mục 3 vì có ghi file test bảo mật; không bao giờ hỏi Q2 (Playwright).
 
 `full` tốn nhiều: sau khi lập todo, hiện tổng số case theo loại/priority và **hỏi xác nhận** trước khi viết.
 
@@ -164,7 +164,7 @@ Với **mỗi** hàm/component/endpoint trong phạm vi, duyệt đủ các nhó
 8. **UX & a11y** (frontend): back/refresh giữa luồng, mất focus, bàn phím, lỗi hiển thị cho người dùng (không im lặng), trạng thái loading/empty/error đều có.
 9. **Happy path**: luồng đúng chính.
 
-Quy tắc cân bằng: với đơn vị P0/P1, số case không-happy phải ≥ số case happy. Chỉ có happy path = chưa đạt.
+Ở `lite`, chỉ bắt buộc nhóm 1, 3 và 9; các nhóm còn lại ghi `N/A (lite)`. Quy tắc cân bằng: với đơn vị P0/P1 ở `default`/`full`, số case không-happy phải ≥ số case happy. Chỉ có happy path = chưa đạt.
 
 ### 7.2 Case "thiếu xử lý" (gap case)
 
@@ -199,7 +199,7 @@ Ghi vào `todo/<run-id>.md` đúng định dạng:
 
 Đồng thời tạo TaskCreate cho từng nhóm lớn (theo file/feature) để user theo dõi tiến độ.
 
-**Cổng kiểm tra trước khi viết** (bắt buộc): với mỗi case, Grep xác nhận bằng chứng (`path:line`, tên hàm, selector, endpoint) tồn tại đúng chỗ. Case nào không xác nhận được → xoá khỏi todo và ghi vào mục "Đã loại" kèm lý do. Case có kỳ vọng không rõ nguồn → `NEEDS-CONFIRM`.
+**Cổng kiểm tra trước khi viết** (bắt buộc): với mỗi case, Grep xác nhận bằng chứng (`path:line`, tên hàm, selector, endpoint) tồn tại đúng chỗ. Case nào không xác nhận được → xoá khỏi todo và ghi vào mục "Đã loại" kèm lý do. Case có kỳ vọng không rõ nguồn → `NEEDS-CONFIRM`. Kiểm tra thêm các test sẵn có trong `hasTests` của summary: nếu đã assert nhánh/hành vi đó → loại case với lý do "Đã được phủ".
 
 Trạng thái hợp lệ: `TODO` → `WRITTEN` → `PASS` | `FAIL-PRODUCT` | `FAIL-TEST` (đang sửa) | `FLAKY` | `BLOCKED` | `NEEDS-CONFIRM`.
 
@@ -228,10 +228,13 @@ tests/
 - Một `describe` cho mỗi đơn vị; Arrange–Act–Assert; mỗi test độc lập, không phụ thuộc thứ tự, reset mock/store trong `beforeEach`.
 - Deterministic: fake timers cho thời gian, seed cho dữ liệu ngẫu nhiên, không network thật trong unit/integration.
 - Assertion cụ thể (giá trị, text, role, số lần gọi + tham số), tránh `toBeTruthy` chung chung và snapshot lớn.
-- Dùng lại helper/fixture/mock sẵn có của dự án trước khi tạo mới.
+- Dùng lại helper/fixture/mock sẵn có của dự án trước khi tạo mới. Trước khi viết test đầu tiên của mỗi loại, đọc 1–2 test sẵn có gần nhất (qua `hasTests`) và theo phong cách đó: cách mock, helper, đặt tên, setup.
+- Mỗi test phải có ít nhất một assertion thật (`expect`/`assert`).
 - Import theo alias của dự án; type-check được (TypeScript không `any` vô cớ).
 - Thiếu selector ổn định → **đề xuất** thêm `data-testid` vào source, không tự sửa.
 - Ở chế độ `commitTests: false`: chỉ tạo file mới, không đụng file test đang được track.
+
+**Chạy thử mẫu trước:** viết và chạy MỘT file cho mỗi loại test (unit/integration/e2e) trước khi viết phần còn lại. Sửa lỗi setup chung (alias, mock, môi trường) một lần rồi mới viết tiếp.
 
 Sau khi viết, cập nhật case sang `WRITTEN`.
 
@@ -267,8 +270,8 @@ Nếu app không khởi động được → các case e2e là `BLOCKED` kèm lo
    - **Môi trường** (thiếu env, server không lên): `BLOCKED` kèm lý do.
    - Kết quả không ổn định: chạy lại tối đa 3 lần; không nhất quán → `FLAKY` (không tính PASS), ghi nguyên nhân nghi ngờ.
 5. Regression: chạy test sẵn có liên quan đến file đổi/impacted (`vitest related <files> --run`, `jest --findRelatedTests <files>`). `full` chạy toàn bộ suite. Ghi riêng lỗi regression.
-6. **Test phải có khả năng fail** (P0, bắt buộc ở `full`): với mỗi case P0 đã PASS, kiểm tra nó thật sự bắt lỗi — trong một bản sao tạm (git worktree/thư mục tạm, **không** sửa source thật) đảo điều kiện/xoá guard liên quan rồi chạy lại; test vẫn pass → test vô dụng, viết lại assertion.
-7. Coverage chỉ báo khi runner thật sự xuất ra; không ước lượng.
+6. **Test phải có khả năng fail** (P0, bắt buộc ở `default` và `full`; nếu dự án đã có Stryker/mutmut hoặc tương đương thì dùng luôn): với mỗi case P0 đã PASS, kiểm tra nó thật sự bắt lỗi — trong một bản sao tạm (git worktree/thư mục tạm, **không** sửa source thật) đảo điều kiện/xoá guard liên quan rồi chạy lại; test vẫn pass → test vô dụng, viết lại assertion.
+7. Chạy các file test mới kèm coverage (nếu runner hỗ trợ), đọc các dòng/nhánh của file được test mà vẫn chưa được phủ. Chỉ thêm case cho chúng khi qua cổng kiểm tra trước khi viết (phải có bằng chứng), tối đa **một** vòng bổ sung. Coverage chỉ báo khi runner thật sự xuất ra; không ước lượng.
 
 ---
 
@@ -292,8 +295,8 @@ Tin nhắn cuối cho user: ngắn gọn — số pass/fail/blocked, bug nổi b
 ## 12. Checklist tự kiểm trước khi kết thúc
 
 - [ ] Mọi TC có bằng chứng `path:line` đã được Grep xác nhận
-- [ ] Mỗi đơn vị P0/P1 có ma trận phủ 9 nhóm, không ô trống; case không-happy ≥ happy
-- [ ] Mọi PASS khớp JSON của runner; không có `.skip`/`.only`/`waitForTimeout` trong file sinh ra (Grep kiểm tra)
+- [ ] Mỗi đơn vị P0/P1 có ma trận phủ 9 nhóm, không ô trống (`lite`: nhóm 1, 3, 9; còn lại `N/A (lite)`); case không-happy ≥ happy (`default`/`full`)
+- [ ] Mọi PASS khớp JSON của runner; không có `.skip`/`.only`/`waitForTimeout` trong file sinh ra (Grep kiểm tra); mọi test đều có assertion
 - [ ] Không file source nào bị sửa ngoài ý user
 - [ ] File sinh ra đúng cấu trúc, có header, có trong `manifest.json`
 - [ ] `.gitignore` đúng lựa chọn Q1, khối không bị trùng
